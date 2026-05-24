@@ -1,8 +1,8 @@
 Package: opencltools
 Type: Package
-Title: OpenCL Tools for R Package Developers
-Version: 0.1.0
-Date: 2026-05-23
+Title: 'OpenCL' Tools for R Package Developers
+Version: 0.8.0
+Date: 2026-05-24
 Authors@R: c(
     person("Kjell", "Nygren", role = c("aut", "cre"),
            email = "kjell.a.nygren@gmail.com"),
@@ -21,10 +21,10 @@ Authors@R: c(
     person("Martin", "Maechler", role = "ctb",
            comment = "Portions of R Mathlib")
     )
-Description: Runtime OpenCL support for R package developers: probe hardware
+Description: Runtime 'OpenCL' support for R package developers: probe hardware
     and drivers, load and concatenate kernel sources, and manage
     dependency-annotated '.cl' libraries, so packages like 'nmathopencl' and
-    other ported libraries can offer GPU acceleration without each reimplementing
+    other ported libraries can offer GPU acceleration without each re-implementing
     the same plumbing. Vignettes use the 'glmbayes' envelope-gradient example
     and likelihood subgradient methodology (Nygren and Nygren, 2006,
     <doi:10.1198/016214506000000357>).
@@ -46,7 +46,7 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
-SystemRequirements: Optional OpenCL support. If available, GPU acceleration will be used; otherwise, computation runs on CPU. 
+SystemRequirements: Optional 'OpenCL' support. If available, GPU acceleration will be used; otherwise, computation runs on CPU.
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
