@@ -1,10 +1,10 @@
 # R functions overlapping **glmbayes** and **nmathopencl**
 
-**Scope:** **`export`** names that appear **verbatim in both packages’ `NAMESPACE`** (same identifier string). Implementation files under **`src/`** are not catalogued separately.  
+**Scope:** **`export`** names that appear **verbatim in both packages’ `NAMESPACE`** (same identifier string). C++ / header overlap is catalogued separately in **`docs/CPP_SHARED_WITH_GLMBAYES.md`**.  
 **Snapshot:** Derived from **`NAMESPACE`** intersections between **`glmbayes`** and this repo (**`nmathopencl`**). Long-form maintainer narrative for these **duplicate** names lives in **`.Rd`**; **`docs/EXPORTED_ADDITIONAL.md`** omits them **by design** (see that file’s scope).  
 **Purpose:** Coordinate edits when façade code exists in duplicate across packages.
 
-Sandbox **`Ex_*`** teaching wrappers (*different* exported symbols from **`glmbayes`**) are documented in **`docs/EXPORTED_EX_GLMBAYES.md`**—**not** in this verbatim-name intersect list and **not** in **`docs/EXPORTED_ADDITIONAL.md`**.
+Sandbox **`Ex_*`** teaching wrappers (*different* exported symbols from **`glmbayes`**) are planned for the sibling **`nmathopencl`** package—**not** in this verbatim-name intersect list and **not** in **`docs/EXPORTED_ADDITIONAL.md`**.
 
 ---
 

@@ -3,6 +3,9 @@
  * @brief OpenCL runtime utilities for opencltools: kernel loading,
  *        device discovery, and fp64 capability probing.
  *
+ * Canonical copy for compilation in src/. Mirror in
+ * inst/include/opencltools/openclPort.h for LinkingTo.
+ *
  * @namespace openclPort
  */
 
@@ -11,6 +14,7 @@
 
 #include <RcppArmadillo.h>
 #include <string>
+#include <vector>
 
 #ifdef __linux__
 #include <stdio.h>
@@ -25,6 +29,9 @@
 using namespace Rcpp;
 
 namespace openclPort {
+
+std::vector<double> flattenMatrix(const Rcpp::NumericMatrix& mat);
+std::vector<double> copyVector(const Rcpp::NumericVector& vec);
 
 Rcpp::CharacterVector gpu_names();
 int detect_num_gpus_internal();
@@ -43,6 +50,8 @@ std::string load_kernel_library_wrapper(
 bool has_opencl();
 int get_opencl_core_count();
 
+#ifdef USE_OPENCL
+
 std::string load_kernel_source(
     const std::string& relative_path,
     const std::string& package = "opencltools"
@@ -53,6 +62,23 @@ std::string load_kernel_library(
     const std::string& package = "opencltools",
     bool verbose = false
 );
+
+struct OpenCLConfig {
+  bool have_expm1;
+  bool have_log1p;
+  std::string buildOptions;
+};
+
+OpenCLConfig configureOpenCL(cl_context context,
+                             cl_device_id device);
+
+std::string load_library_for_kernel(
+    const std::string& kernel_relative_path,
+    const std::string& library_subdir,
+    const std::string& package,
+    const std::string& depends_tag);
+
+#endif // USE_OPENCL
 
 struct OpenCLFp64DeviceCache {
   bool valid = false;
