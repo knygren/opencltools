@@ -7,7 +7,7 @@ R Mathlib and R Source Code
 ---------------------------
 
 The package includes local copies, adaptations, or translations of selected
-portions of R Mathlib and R source code in src/, src/nmath/, and inst/cl/. These
+portions of R Mathlib and R source code in inst/cl/. These
 files retain the original copyright and license notices where present. The
 OpenCL kernels in inst/cl/nmath/, inst/cl/dpq/, and inst/cl/rmath/ are ports or
 adaptations of relevant R Mathlib distribution routines, probability helper

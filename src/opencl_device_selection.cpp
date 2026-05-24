@@ -341,23 +341,6 @@ Rcpp::List opencl_device_info_rcpp(bool force, bool details) {
   return L;
 }
 
-void opencl_bind_selected_fp64_device_or_throw(cl_platform_id& platform, cl_device_id& device) {
-  platform = nullptr;
-  device = nullptr;
-  if (!opencl_ensure_fp64_selection(false)) {
-    const OpenCLFp64DeviceCache& fp = opencl_fp64_selection();
-    std::ostringstream msg;
-    msg << "OpenCL error: no device with cl_khr_fp64 suitable for double-precision kernels ("
-        << fp.reason << ").";
-    if (!fp.probe_failure_log.empty())
-      msg << " Last probe log: " << fp.probe_failure_log;
-    throw std::runtime_error(msg.str());
-  }
-  const OpenCLFp64DeviceCache& fp = opencl_fp64_selection();
-  platform = (cl_platform_id)fp.platform;
-  device = (cl_device_id)fp.device;
-}
-
 } // namespace openclPort
 
 #else // !USE_OPENCL
