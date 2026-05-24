@@ -18,10 +18,8 @@ OpenCL device. This can be useful for diagnostics or performance tuning.
 
 \donttest{
 has_opencl()
-opencl_fp64_available()
-opencl_device_info()
-get_opencl_core_count()
 
+## Host-side inventory (no OpenCL runtime required)
 info <- detect_environment_and_gpus()
 info$environment
 gpu_names()
@@ -29,11 +27,17 @@ gpu_names()
 runtime <- detect_compute_runtimes(info)
 check_runtime_env(runtime)
 
-verify_opencl_runtime()
+## OpenCL device probes (compile tiny programs; skip when unavailable)
+if (has_opencl()) {
+  opencl_fp64_available()
+  opencl_device_info()
+  get_opencl_core_count()
+  verify_opencl_runtime()
 
-# Full diagnostic report (prints; returns list invisibly)
-diag <- diagnose_glmbayes()
-names(diag)
+  # Full diagnostic report (prints; returns list invisibly)
+  diag <- diagnose_glmbayes()
+  names(diag)
+}
 }
 
 ###############################################################################

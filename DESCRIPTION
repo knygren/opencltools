@@ -21,7 +21,7 @@ Authors@R: c(
     person("Martin", "Maechler", role = "ctb",
            comment = "Portions of R Mathlib")
     )
-Description: 'opencltools' provides runtime OpenCL support for R: probe hardware
+Description: Runtime OpenCL support for R package developers: probe hardware
     and drivers, load and concatenate kernel sources, and manage
     dependency-annotated '.cl' libraries, so packages like 'nmathopencl' and
     other ported libraries can offer GPU acceleration without each reimplementing
