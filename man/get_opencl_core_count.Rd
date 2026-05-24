@@ -13,3 +13,30 @@ Integer count of compute units.
 Returns the number of compute units (cores) available on the default
 OpenCL device. This can be useful for diagnostics or performance tuning.
 }
+\examples{
+############################ Start of gpu_diagnostics example ########################
+
+\donttest{
+has_opencl()
+opencl_fp64_available()
+opencl_device_info()
+get_opencl_core_count()
+
+info <- detect_environment_and_gpus()
+info$environment
+gpu_names()
+
+runtime <- detect_compute_runtimes(info)
+check_runtime_env(runtime)
+
+verify_opencl_runtime()
+
+# Full diagnostic report (prints; returns list invisibly)
+diag <- diagnose_glmbayes()
+names(diag)
+}
+
+###############################################################################
+## End of gpu_diagnostics example
+###############################################################################
+}

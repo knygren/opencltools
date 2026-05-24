@@ -4,6 +4,7 @@
 #' OpenCL device. This can be useful for diagnostics or performance tuning.
 #'
 #' @return Integer count of compute units.
+#' @example inst/examples/Ex_gpu_diagnostics.R
 #' @export
 get_opencl_core_count <- function() {
   .get_opencl_core_count_cpp()

@@ -108,6 +108,7 @@
 #' \code{\link{has_opencl}}.
 #'
 #' @keywords diagnostics gpu opencl environment
+#' @example inst/examples/Ex_gpu_diagnostics.R
 #' @name gpu_diagnostics
 NULL
 

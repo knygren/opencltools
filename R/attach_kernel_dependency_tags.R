@@ -26,6 +26,7 @@
 #'     definition file.}
 #' }
 #'
+#' @example inst/examples/Ex_attach_kernel_dependency_tags.R
 #' @export
 attach_kernel_dependency_tags <- function(library_dir, dry_run = FALSE) {
   if (!dir.exists(library_dir)) {
@@ -149,6 +150,7 @@ attach_kernel_dependency_tags <- function(library_dir, dry_run = FALSE) {
 #'
 #' @return Invisibly returns `x`.
 #'
+#' @example inst/examples/Ex_attach_kernel_dependency_tags.R
 #' @export
 print.opencl_dependency_tags <- function(x, max_rows = 50, ...) {
   if (isTRUE(x$ok)) {

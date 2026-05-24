@@ -35,6 +35,8 @@
 #' @seealso \link{extract_library_subset}
 #' @family OpenCL kernel library subsets
 #'
+#' @example inst/examples/Ex_write_kernel_dependency_index.R
+#'
 #' @export
 write_kernel_dependency_index <- function(
     library_dir = NULL,

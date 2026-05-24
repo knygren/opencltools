@@ -65,6 +65,7 @@
 #'   }
 #'
 #' @seealso \link{attach_cross_library_tags}, \link{attach_kernel_dependency_tags}
+#' @example inst/examples/Ex_kernel_tagging_workflow.R
 #' @export
 attach_kernel_call_tags <- function(kernel_paths,
                                     library_dir,

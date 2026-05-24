@@ -11,6 +11,8 @@
 #'
 #' @return A list containing sorted and unresolved data frames.
 #'
+#' @example inst/examples/Ex_stage_kernel_dependency_sort.R
+#'
 #' @export
 stage_kernel_dependency_sort <- function(library_dir, output_dir,
                                          overwrite = FALSE) {

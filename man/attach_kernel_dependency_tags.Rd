@@ -37,3 +37,17 @@ Tags are written only if dependency sorting fully succeeds. If unresolved
 files remain, no files are modified and a cycle report is returned so source
 refactoring can be prioritized.
 }
+\examples{
+############################ Start of attach_kernel_dependency_tags example ########################
+
+\donttest{
+lib_dir <- system.file("cl/ex_glmbayes_nmath", package = "opencltools")
+res <- attach_kernel_dependency_tags(lib_dir, dry_run = TRUE)
+res$ok
+print(res)
+}
+
+###############################################################################
+## End of attach_kernel_dependency_tags example
+###############################################################################
+}

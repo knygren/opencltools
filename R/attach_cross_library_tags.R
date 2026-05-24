@@ -56,6 +56,7 @@
 #' @seealso \link{attach_kernel_dependency_tags}
 #' \link{write_kernel_dependency_index}
 #' \link{load_library_for_kernel}
+#' @example inst/examples/Ex_kernel_tagging_workflow.R
 #' @export
 attach_cross_library_tags <- function(kernel_paths,
                                       library_dir,

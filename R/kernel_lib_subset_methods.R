@@ -18,6 +18,7 @@
 #'   \verb{//@provides}).
 #'   Use \code{NA_integer_} or a negative value for no cap on algorithm shards.
 #'
+#' @example inst/examples/Ex_kernel_lib_subset_printing.R
 #' @name kernel_lib_subset_printing
 
 
