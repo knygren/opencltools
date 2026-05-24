@@ -1,0 +1,371 @@
+---
+title: "Chapter 01: Getting started — Setting up OpenCL"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Chapter 01: Getting started — Setting up OpenCL}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+This chapter describes how to install and verify an OpenCL development
+environment so that `opencltools` — and any downstream package that uses it,
+such as `nmathopencl` or `glmbayes` — can compile and run GPU‑accelerated
+code.
+
+OpenCL is vendor‑neutral and works across NVIDIA, AMD, and Intel hardware.
+All `opencltools` functions degrade gracefully when OpenCL is unavailable:
+device probing, kernel source loading, dependency sorting, and library
+subsetting all work without a GPU.  Only the live kernel‑launch path requires
+OpenCL at runtime.
+
+---
+
+# 1. Download and install build tools
+
+## 1.1 Windows: Install Rtools
+
+<https://cran.r-project.org/bin/windows/Rtools/>
+
+## 1.2 Linux: Install compiler toolchain and R development headers
+
+- **Ubuntu/Debian:**
+
+        sudo apt-get install build-essential r-base-dev
+
+  *(If you need the latest R, add the CRAN repo first — see "Installing the
+  latest R on Ubuntu/Debian" below.)*
+
+- **Fedora:**
+
+        sudo dnf groupinstall "Development Tools"
+        sudo dnf install R-devel
+
+- **Arch Linux:**
+
+        sudo pacman -S base-devel r
+
+### Installing the latest R on Ubuntu/Debian (optional but recommended)
+
+Ubuntu's default repositories often contain older R versions.  To install
+the current CRAN release:
+
+```sh
+sudo apt-get install --no-install-recommends \
+  dirmngr gnupg ca-certificates software-properties-common
+sudo gpg --keyserver keyserver.ubuntu.com \
+  --recv-key E298A3A825C0D65DFD57CBB651716619E084DAB9
+sudo gpg -a --export E298A3A825C0D65DFD57CBB651716619E084DAB9 \
+  | sudo tee /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+sudo add-apt-repository \
+  "deb https://CRAN.R-project.org/bin/linux/ubuntu/ jammy-cran40/"
+sudo apt-get update
+sudo apt-get install build-essential r-base-dev
+```
+
+## 1.3 macOS: Install Xcode Command Line Tools and GCC
+
+macOS requires both the Xcode Command Line Tools and GCC when installing
+packages from source.  The `configure` script uses GCC to detect system
+include and library paths for OpenCL.
+
+```sh
+xcode-select --install
+brew install gcc
+```
+
+Binary installs do not require GCC.
+
+---
+
+# 2. Install OpenCL components
+
+Packages that use GPU acceleration must be installed **from source** because
+neither CRAN nor R‑universe build packages with OpenCL GPU support — their
+build systems do not provide OpenCL headers or development libraries, so any
+precompiled binary has OpenCL disabled.  To enable GPU acceleration you must
+build from source on a system with a complete OpenCL development environment.
+
+A full OpenCL development environment includes:
+
+1. **OpenCL header files** (needed at compile time)
+2. **The OpenCL runtime / ICD loader** (needed at runtime)
+3. **The OpenCL development library** providing the unversioned linker symlink
+   `libOpenCL.so` (needed for linking)
+
+Most GPU drivers provide only the vendor‑specific runtime, not the headers or
+the development symlink.  The following subsections describe how to obtain all
+three components on each platform.
+
+## 2.1 Windows
+
+Choose one of:
+
+- **CUDA Toolkit (recommended)**  
+  Includes full OpenCL headers.  
+  <https://developer.nvidia.com/cuda-downloads>
+
+- **Intel OpenCL runtimes / Intel oneAPI CPU runtime**  
+  <https://www.intel.com/content/www/us/en/developer/articles/tool/opencl-drivers.html>
+
+- **Khronos OpenCL Headers (header‑only download)**  
+  <https://github.com/KhronosGroup/OpenCL-Headers>
+
+**Note:** When installing the CUDA Toolkit, Intel OpenCL SDK, or Khronos
+headers you can accept all default installation options.  The defaults include
+`CL/cl.h` and the other headers required to compile from source.
+
+On Windows, installing the CUDA Toolkit or Intel OpenCL SDK is sufficient; no
+additional runtime or development packages are required.
+
+AMD's Windows driver package includes the OpenCL runtime and ICD components
+automatically.  No additional installation or PATH configuration is required.
+If OpenCL is not detected, updating to the latest AMD Software (Adrenalin
+Edition) typically resolves the issue.
+
+## 2.2 Linux
+
+To compile and run with OpenCL support on Linux, you must install:
+
+1. An OpenCL implementation (vendor runtime)
+2. OpenCL header files (compile‑time)
+3. The OpenCL ICD loader (runtime)
+4. The OpenCL development library providing `libOpenCL.so` (linking)
+
+The correct OpenCL implementation depends on your GPU vendor.  For NVIDIA
+and Intel the runtime is installed automatically with the GPU driver.  For
+AMD see Appendix A.
+
+### 2.2.1 OpenCL implementation (vendor runtime)
+
+- **NVIDIA**: installed automatically with the proprietary driver.
+- **Intel**: installed automatically with the Intel GPU driver.
+- **AMD**: requires installing ROCm OpenCL. See Appendix A.
+
+### 2.2.2 OpenCL header files
+
+These provide `CL/cl.h`, `CL/cl_platform.h`, and related headers.
+
+- **Ubuntu / Debian**
+
+        sudo apt-get install opencl-headers
+
+- **Fedora**
+
+        sudo dnf install opencl-headers
+
+- **Arch Linux**
+
+        sudo pacman -S opencl-headers
+
+### 2.2.3 OpenCL runtime (ICD loader)
+
+Provides the shared library `libOpenCL.so.1` required for OpenCL to function
+at runtime.
+
+- **Ubuntu / Debian**
+
+        sudo apt-get install ocl-icd-libopencl1
+
+- **Fedora**
+
+        sudo dnf install ocl-icd
+
+- **Arch Linux**
+
+        sudo pacman -S opencl-icd-loader
+
+### 2.2.4 OpenCL development library (linker symlink)
+
+To compile against OpenCL the linker requires the unversioned symlink
+`libOpenCL.so`.  This is **not** provided by the runtime package.
+
+- **Ubuntu / Debian**
+
+        sudo apt-get install ocl-icd-opencl-dev
+
+- **Fedora**
+
+        sudo dnf install ocl-icd-devel
+
+- **Arch Linux**
+
+        *(already included with the ICD loader)*
+
+Verify installation:
+
+```sh
+ls -l /usr/lib/x86_64-linux-gnu/libOpenCL*
+```
+
+You should see **both** `libOpenCL.so` and `libOpenCL.so.1`.  If only
+`libOpenCL.so.1` is present, install the development package.
+
+### 2.2.5 Verify OpenCL platforms with `clinfo` (Linux, recommended)
+
+Having headers and `libOpenCL` installed does **not** guarantee that a vendor
+OpenCL implementation registers a platform.  On Linux — especially remote GPU
+VMs — it helps to check outside R first.
+
+```sh
+sudo apt-get install clinfo   # Ubuntu/Debian
+clinfo
+```
+
+You should see **`Number of platforms` >= 1** and at least one GPU device.
+If `Number of platforms` is 0, the ICD loader is present but no vendor runtime
+is visible — install your vendor's OpenCL ICD (`sudo apt-get install nvidia-opencl-icd`
+on Ubuntu/Debian NVIDIA systems) and run `clinfo` again.
+
+`clinfo` complements the R‑level diagnostics when debugging cloud or container
+setups where `nvidia-smi` works but OpenCL still reports no platform.
+
+## 2.3 macOS
+
+macOS includes the OpenCL headers and system runtime as part of the Xcode
+Command Line Tools, so no additional installation is required for compilation.
+However, Apple has deprecated OpenCL, and modern Apple Silicon systems do not
+provide hardware OpenCL support.  Packages will compile successfully on macOS
+but GPU acceleration is not guaranteed and may fall back to CPU execution.
+
+---
+
+# 3. Install opencltools from source (for OpenCL)
+
+The CRAN release and prebuilt R‑Universe binaries are built without OpenCL GPU
+support.  Install from source on a machine with OpenCL headers and a working
+vendor runtime to enable GPU acceleration.
+
+```r
+install.packages(
+  "opencltools",
+  repos = c("https://cloud.r-project.org", "https://knygren.r-universe.dev"),
+  type = "source"
+)
+```
+
+---
+
+# 4. Load the package
+
+```r
+library(opencltools)
+```
+
+---
+
+# 5. Check for OpenCL availability
+
+On **Linux**, if you have shell access (including Jupyter Terminal on a cloud
+instance), running `clinfo` before opening R is recommended — it catches
+missing vendor ICDs early, independent of the R session.
+
+```r
+has_opencl()
+```
+
+- Returns `TRUE` if OpenCL is available and detected.
+- Returns `FALSE` if OpenCL is not available.
+
+## 5.1 Full diagnostic
+
+If `has_opencl()` returns `FALSE`, or to get a complete picture of your
+OpenCL environment, run the diagnostic suite:
+
+```r
+# High-level environment and GPU detection
+detect_environment_and_gpus()
+
+# Runtime availability check (platform probe)
+verify_opencl_runtime()
+
+# PATH and library directory validation
+check_runtime_env()
+```
+
+`detect_environment_and_gpus()` reports the OS, GPU vendor(s) detected, and
+which runtimes are present.  `verify_opencl_runtime()` performs a live
+`clGetPlatformIDs()` call and reports the first usable device.
+`check_runtime_env()` validates PATH and library search paths.
+
+A clean `verify_opencl_runtime()` output looks like:
+
+```
+=== OpenCL Runtime Check ===
+Environment: linux
+GPU: NVIDIA
+  [OK] Driver installed
+  [OK] OpenCL headers found (CL/cl.h)
+  [OK] OpenCL runtime found (libOpenCL ICD)
+  [OK] OpenCL fully available (headers + runtime)
+  [OK] Required PATH and library dirs present
+  [OK] OpenCL runtime probe succeeded (platform available)
+  [OK] opencltools was compiled with OpenCL support.
+```
+
+If any line shows a warning or error the output indicates which component
+is missing and how to correct it.
+
+---
+
+# 6. Verify the kernel-loading path
+
+Even without a GPU you can verify that `opencltools`' kernel loading and
+dependency management work correctly.  These operate entirely in R without
+touching the OpenCL runtime:
+
+```{r, eval = FALSE}
+library(opencltools)
+
+# Load a single kernel source file
+src <- load_kernel_source("OPENCL.cl")
+nchar(src)
+
+# List available devices (requires runtime)
+if (has_opencl()) {
+  opencl_device_info()
+  gpu_names()
+}
+```
+
+---
+
+# Appendix A: AMD GPUs on Linux (ROCm OpenCL recommended)
+
+AMD provides multiple OpenCL implementations on Linux, but only **ROCm
+OpenCL** is fully supported and stable.  If you are using an AMD GPU we
+recommend installing ROCm OpenCL on **Ubuntu 22.04 or 24.04 LTS**.
+
+## Install ROCm OpenCL (Ubuntu LTS)
+
+```sh
+sudo apt-get install rocm-opencl-runtime
+```
+
+This installs the AMD OpenCL runtime, the ICD file (`amdocl64.icd`), and
+ROCm's optimised OpenCL implementation.
+
+## Supported AMD GPUs
+
+ROCm OpenCL supports:
+
+- Radeon RX 7900 XTX / XT / GRE
+- Radeon RX 7800 XT / 7700 XT
+- Radeon Pro W7900 / W7800 / W7700
+- Instinct MI200 / MI300 accelerators
+
+Older GPUs (Polaris, Vega, Navi 1x/2x) are **not supported** by ROCm.
+
+## Other AMD OpenCL stacks
+
+- **Mesa Rusticl**: community OpenCL implementation; may work but is not
+  officially supported.
+- **AMDGPU‑PRO OpenCL**: legacy and not recommended.

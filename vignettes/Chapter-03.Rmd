@@ -1,0 +1,318 @@
+---
+title: "Chapter 03: Kernel runners and wrappers — the glmbayes pattern"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Chapter 03: Kernel runners and wrappers — the glmbayes pattern}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(opencltools)
+```
+
+# Introduction
+
+Once you have OpenCL installed (Chapter 01) and understand how to assemble
+a program from annotated library shards (Chapter 02), the next step is to
+wire GPU computation into your R package in a maintainable way.
+
+`glmbayes` provides the canonical reference implementation of this pattern.
+It uses a **two-layer architecture** — a *kernel runner* that manages the
+raw OpenCL API, and a *kernel wrapper* that adapts R inputs and outputs —
+together with a "fail gracefully" strategy that falls back to CPU execution
+whenever OpenCL is unavailable or slow.
+
+This chapter describes both layers and the fail-gracefully pattern so you
+can replicate them in your own package.  All source code referenced here
+lives in `glmbayes`; see `?glmbayes::EnvelopeEval` for entry points.
+
+---
+
+# 1. Architecture overview
+
+The two-layer design cleanly separates concerns:
+
+| Layer | Name | File | Responsibility |
+|-------|------|------|----------------|
+| **Wrapper** | `f2_f3_opencl` | `kernel_wrappers.cpp` | Flatten R inputs, select kernel, assemble program, call runner, reshape outputs |
+| **Runner** | `f2_f3_kernel_runner` | `kernel_runners.cpp` | Platform/device setup, buffer management, kernel launch, result readback |
+
+### Call path
+
+```
+EnvelopeEval (R or C++)
+    |-- if use_opencl && pilot/check passes:
+    |       f2_f3_opencl()  ->  f2_f3_kernel_runner()
+    \-- else:
+            f2_f3_non_opencl()  ->  CPU family functions
+```
+
+`EnvelopeEval` receives a coefficient grid, design matrix, prior parameters,
+and family/link specification.  It selects the GPU or CPU path and
+dispatches accordingly.  The GPU path calls `f2_f3_opencl`, which assembles
+the OpenCL program and invokes `f2_f3_kernel_runner`; the CPU path calls
+`f2_f3_non_opencl`, which dispatches to the appropriate C++ function.
+
+---
+
+# 2. Kernel structure
+
+Every family/link has a dedicated `.cl` file that implements the f2 (negative
+log posterior) and f3 (gradient) computations for one model.  Each kernel
+follows the same five-step pattern:
+
+### Step 1 — Work-item mapping
+
+```c
+int j = get_global_id(0);
+if (j >= m1) return;
+```
+
+One OpenCL work item handles one grid point `j`.  The total number of work
+items equals `m1` (the size of the tangency grid), so all grid points are
+evaluated in parallel.
+
+### Step 2 — Prior term
+
+```c
+// tmp[k] = [P * (B_j - mu)]_k
+double tmp[MAX_L2];
+for (int k = 0; k < l2; ++k) {
+  double acc = 0.0;
+  for (int ell = 0; ell < l2; ++ell)
+    acc += P[k*l2 + ell] * (B[j*l2 + ell] - mu[ell]);
+  tmp[k] = acc;
+}
+
+// Quadratic form 0.5 * (B_j - mu)' * P * (B_j - mu)
+double res_acc = 0.0;
+for (int k = 0; k < l2; ++k)
+  res_acc += (B[j*l2 + k] - mu[k]) * tmp[k];
+res_acc *= 0.5;
+```
+
+### Step 3 — Prior gradient
+
+```c
+double g_loc[MAX_L2];
+for (int k = 0; k < l2; ++k)
+  g_loc[k] = tmp[k];   // P * (B_j - mu)
+```
+
+### Step 4 — Data loop
+
+For each observation `i`, compute the linear predictor, apply the link
+function, add the likelihood contribution to `res_acc`, and accumulate the
+gradient.  This step calls the ported nmath functions (e.g. `dnorm4`,
+`dgamma`, `dbinom_raw`, `pnorm5`):
+
+```c
+for (int i = 0; i < l1; ++i) {
+  double dot = alpha[i];
+  for (int k = 0; k < l2; ++k)
+    dot += X[k*l1 + i] * B[j*l2 + k];
+
+  // Gaussian example: -log dnorm(y | mean=dot, sd=1/sqrt(wt))
+  double sd_i = 1.0 / sqrt(wt[i]);
+  double ll   = dnorm4(y[i], dot, sd_i, 1);   // give_log = 1
+  res_acc    -= ll;
+
+  double resid = wt[i] * (dot - y[i]);
+  for (int k = 0; k < l2; ++k)
+    g_loc[k] += X[k*l1 + i] * resid;
+}
+```
+
+### Step 5 — Write outputs
+
+```c
+qf[j] = res_acc;
+for (int k = 0; k < l2; ++k)
+  grad[k*m1 + j] = g_loc[k];   // column-major
+```
+
+`qf[j]` holds the negative log posterior for grid point `j`; `grad` holds
+the gradient in column-major layout (dimension `l2 × m1`).
+
+---
+
+## 2.1 Supported family/link kernels in glmbayes
+
+| Family | Link | Kernel file | nmath calls |
+|--------|------|-------------|-------------|
+| binomial | logit | `f2_f3_binomial_logit.cl` | `dbinom_raw` |
+| binomial | probit | `f2_f3_binomial_probit.cl` | `dbinom_raw`, `dnorm4`, `pnorm5` |
+| binomial | cloglog | `f2_f3_binomial_cloglog.cl` | `dbinom_raw`, `expm1` |
+| Poisson | log | `f2_f3_poisson.cl` | *(uses OpenCL builtin `lgamma`)* |
+| Gamma | inverse | `f2_f3_gamma.cl` | `dgamma` |
+| Gaussian | identity | `f2_f3_gaussian.cl` | `dnorm4` |
+
+Each file is annotated with `@calls_nmath`, `@depends_nmath`, and
+`@all_depends_nmath` (see Chapter 02, §6) so the kernel runner loads only
+the library shards it needs.
+
+---
+
+# 3. The kernel wrapper
+
+The wrapper (`f2_f3_opencl` in `kernel_wrappers.cpp`) is an Rcpp-exported
+function.  Its responsibilities are:
+
+1. **Input flattening** — convert R `NumericMatrix` / `NumericVector` to
+   contiguous `std::vector<double>` in the memory layout the runner expects
+   (`flattenMatrix`, `copyVector` from `openclPort`).
+
+2. **Kernel selection** — map `(family, link)` to a kernel name and
+   kernel file path:
+   ```cpp
+   std::string kernel_name = "f2_f3_binomial_logit";
+   std::string kernel_file = "src/f2_f3_binomial_logit.cl";
+   ```
+
+3. **Program assembly** — call `load_library_for_kernel()` for the minimal
+   nmath subset, then concatenate:
+   ```cpp
+   std::string all_src =
+       load_kernel_source("OPENCL.cl", pkg)
+     + load_kernel_library("rmath", pkg)
+     + load_kernel_library("dpq",   pkg)
+     + load_library_for_kernel(kernel_file, nmath_dir, "all_depends_nmath")
+     + load_kernel_source(kernel_file, pkg);
+   ```
+
+4. **Runner call** — invoke `f2_f3_kernel_runner(all_src, kernel_name, ...)`.
+
+5. **Output reshaping** — wrap the flat `qf` and `grad` results into R
+   `NumericVector` and `arma::mat` for return to R.
+
+### Linking against opencltools
+
+The wrapper can use `opencltools` C++ utilities by adding to the downstream
+package's `DESCRIPTION`:
+
+```
+LinkingTo: opencltools, Rcpp, RcppArmadillo
+```
+
+This gives access to `openclPort.h` which declares `flattenMatrix`,
+`copyVector`, `configureOpenCL`, and `load_library_for_kernel`.
+
+---
+
+# 4. The kernel runner
+
+The runner (`f2_f3_kernel_runner` in `kernel_runners.cpp`) handles the
+low-level OpenCL API.  Each call is stateless — it sets up a complete
+OpenCL context, launches the kernel, reads back results, and releases
+all resources:
+
+```
+1. clGetPlatformIDs / clGetDeviceIDs (CL_DEVICE_TYPE_DEFAULT)
+2. clCreateContext / clCreateCommandQueueWithProperties
+3. clCreateProgramWithSource(all_src) + clBuildProgram
+4. clCreateKernel(kernel_name)
+5. Create read/write buffers; copy input data to device
+6. clEnqueueNDRangeKernel (global_size = m1, local_size = NULL)
+7. clEnqueueReadBuffer for qf and grad
+8. Sanity check: if both outputs are all-zero, throw (kernel build failure)
+9. Release buffers, kernel, program, queue, context
+```
+
+The runner is GLM-specific (it knows the buffer layout for X, B, mu, P,
+alpha, y, wt, qf, grad) but the OpenCL plumbing portion is fully generic.
+The general utilities — kernel loading, device enumeration, fp64 probing —
+live in `openclPort` and are re-exported by `opencltools` for use by any
+downstream package.
+
+---
+
+# 5. Fail gracefully — the dispatch pattern
+
+The fail-gracefully pattern is the key architectural decision that makes
+GPU acceleration optional in a downstream package.  The idea is that
+**every** GPU-dispatching function has a CPU fallback of identical interface:
+
+```cpp
+// In EnvelopeEval.cpp (glmbayes)
+if (use_opencl && opencl_pilot_ok) {
+  result = f2_f3_opencl(X, B, mu, P, alpha, y, wt, family, link);
+} else {
+  result = f2_f3_non_opencl(X, B, mu, P, alpha, y, wt, family, link);
+}
+```
+
+`f2_f3_non_opencl` is a plain C++ function that calls the same family
+functions (`f2_f3_binomial_logit`, `f2_f3_gaussian`, etc.) without any
+OpenCL involvement.
+
+This pattern means:
+
+- **`has_opencl()` returning `FALSE`** — the package still installs and
+  works; `use_opencl` is silently ignored.
+- **OpenCL build failure** (kernel compile error) — the runner throws; the
+  caller catches and falls back to CPU.
+- **Numerical mismatch** — the pilot can compare a small GPU result against
+  the CPU result; if they differ beyond tolerance, fall back automatically.
+
+---
+
+# 6. The pilot pattern
+
+For large workloads (e.g. a tangency grid with > 50,000 points),
+`glmbayes` runs a **pilot** before committing to the full GPU evaluation.
+The pilot:
+
+1. **Warm-up** — run the GPU kernel on a tiny slice (10–20 points) to
+   initialise the context and JIT-compile the program.
+2. **Calibration** — run on slices of ~1% and ~2% of the grid, time each.
+3. **Extrapolation** — `refined_est_total_sec = per_grid_sec × m1`.
+4. **5-minute safeguard** — if `refined_est_total_sec > 300`:
+   - **Interactive session**: prompt "Do you want to continue? [y/N]"
+   - **Non-interactive session**: proceed automatically (CI / batch jobs)
+
+This pattern is reusable in any package that dispatches large parallel
+workloads to a GPU.  The 5-minute threshold and prompt wording can be
+tuned to the specific workload.
+
+---
+
+# 7. Setting up OpenCL before first use
+
+`glmbayes` calls `configureOpenCL()` during package initialisation to probe
+the OpenCL device for native `expm1` and `log1p` support.  The probe
+compiles a tiny test kernel and checks the result:
+
+- If the device computes `expm1(0)` accurately → define `USE_OPENCL_EXPM1`.
+- If the device computes `log1p(0)` accurately → define `USE_OPENCL_LOG1P`.
+
+These flags are passed as `-D` options to `clBuildProgram` and control
+whether the nmath shims (`expm1.cl`, `log1p.cl`) use the native builtin or
+the ported fallback.
+
+```cpp
+// In your package's initialisation (e.g., called from .onLoad)
+OpenCLConfig cfg = configureOpenCL();
+// cfg.build_options contains -DUSE_OPENCL_EXPM1 etc. as appropriate
+// Pass cfg.build_options to clBuildProgram
+```
+
+`configureOpenCL` is declared in `openclPort.h` and is available to any
+package that lists `opencltools` under `LinkingTo`.
+
+---
+
+# Cross-references
+
+- **Chapter 01** — OpenCL installation and `has_opencl()`
+- **Chapter 02** — Program assembly, `load_library_for_kernel()`
+- **`?load_kernel_source`**, **`?load_kernel_library`**
+- **`?load_library_for_kernel`**
+- **`glmbayes::EnvelopeEval`**, **`glmbayes::EnvelopeBuild`** — reference implementation

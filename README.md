@@ -398,21 +398,20 @@ GPU-dispatching functions degrade gracefully when OpenCL is unavailable.
 
 ---
 
-## Vignettes (planned)
+## Vignettes
 
-Deeper worked examples are planned as vignettes, numbered so they appear
-in the correct order in the package index (following the `Chapter-NN` convention
-used by `glmbayes`):
+Vignettes are numbered so they appear in the correct order in the package
+index, following the `Chapter-NN` convention used by `glmbayes`.
 
-| Vignette file | Title |
-|---------------|-------|
-| `Chapter-00` | **Introduction** — What opencltools is and when to use it |
-| `Chapter-01` | **Getting started** — Setting up OpenCL, verifying the runtime, first kernel load |
-| `Chapter-02` | **Using a ported library** — Annotating kernels, assembling programs, subsetting a `.cl` library (`nmathopencl` as the worked example) |
-| `Chapter-03` | **Kernel runners and wrappers** — The runner/wrapper pattern from `glmbayes`, graceful fallback |
-| `Chapter-04` | **Testing and parity validation** — Using `nmathopencl`'s `*_opencl` wrappers to verify numerical accuracy before relying on device code |
-| `Chapter-A01` | **Appendix: Kernel annotation in depth** — `attach_kernel_call_tags`, `attach_cross_library_tags`, dependency closure, `@depends` vs `@all_depends`, index format |
-| `Chapter-A02` | **Appendix: Vendoring a library subset** — Using `extract_library_subset` and `write_kernel_dependency_index` to ship a minimal shard tree with your package |
+| Vignette file | Status | Title |
+|---------------|--------|-------|
+| `Chapter-01` | ✓ | **Getting started** — Setting up OpenCL, verifying the runtime, first kernel load |
+| `Chapter-02` | ✓ | **Using a ported library** — Annotating kernels, assembling programs, subsetting a `.cl` library (`nmathopencl` as the worked example) |
+| `Chapter-03` | ✓ | **Kernel runners and wrappers** — The runner/wrapper pattern from `glmbayes`, graceful fallback |
+| `Chapter-00` | planned | **Introduction** — What opencltools is and when to use it |
+| `Chapter-04` | planned | **Testing and parity validation** — Using `nmathopencl`'s `*_opencl` wrappers to verify numerical accuracy before relying on device code |
+| `Chapter-A01` | planned | **Appendix: Kernel annotation in depth** — `attach_kernel_call_tags`, `attach_cross_library_tags`, dependency closure, `@depends` vs `@all_depends`, index format |
+| `Chapter-A02` | planned | **Appendix: Vendoring a library subset** — Using `extract_library_subset` and `write_kernel_dependency_index` to ship a minimal shard tree with your package |
 
 ---
 

@@ -40,7 +40,10 @@ LinkingTo: Rcpp, RcppArmadillo, RcppParallel
 Depends: R (>= 3.5.0)
 Suggests:
     testthat (>= 3.0.0),
-    spelling
+    spelling,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
 SystemRequirements: Optional OpenCL support. If available, GPU acceleration will be used; otherwise, computation runs on CPU. 
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
