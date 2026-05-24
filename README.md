@@ -417,10 +417,40 @@ index, following the `Chapter-NN` convention used by `glmbayes`.
 
 ## References
 
+### Citing this package
+
+Nygren, K. N. (2026). *opencltools: OpenCL Tools for R Package Developers*.
+R package. Use `citation("opencltools")` for BibTeX and a layered set of
+related entries (methodology, OpenCL, glmbayes).
+
+### Methodology in the worked example (`f2_f3_*` kernels)
+
+The vignettes and `ex_glmbayes_*` example kernels evaluate **likelihood
+subgradient** quantities used in envelope-based accept–reject sampling. That
+statistical construction is from:
+
 Nygren, K. N., & Nygren, L. M. (2006). Likelihood subgradient densities.
 *Journal of the American Statistical Association*, 101(475), 1144–1156.
 <https://doi.org/10.1198/016214506000000357>
 
-Nygren, K. N. (2025). *glmbayes: Bayesian Generalized Linear Models (IID
-Samples)*. R package version 0.9.6.
-<https://CRAN.R-project.org/package=glmbayes>
+Cite this paper when your work uses that envelope/subgradient computation,
+not when you only use the generic OpenCL loading and annotation tools.
+
+### OpenCL runtime
+
+Stone, J. E., Gohara, D., & Shi, G. (2010). OpenCL: A Parallel Programming
+Standard for Heterogeneous Computing Systems. *IEEE Computing in Science &
+Engineering*, 12(3), 66–72. <https://doi.org/10.1109/MCSE.2010.69>
+
+Khronos OpenCL Working Group. *The OpenCL Specification* and *The OpenCL C
+Specification*. <https://www.khronos.org/opencl/>
+
+OpenCL and the OpenCL logo are trademarks of Apple Inc. used by permission by
+Khronos.
+
+### Related R packages
+
+- **nmathopencl** — example ported statistical library used in vignettes
+- **glmbayes** — reference downstream application and source of the
+  runner/wrapper pattern; portions of the runtime layer were adapted during
+  the split from glmbayes

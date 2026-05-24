@@ -21,11 +21,13 @@ Authors@R: c(
     person("Martin", "Maechler", role = "ctb",
            comment = "Portions of R Mathlib")
     )
-Description: opencltools provides runtime OpenCL support for R: probe hardware
+Description: 'opencltools' provides runtime OpenCL support for R: probe hardware
     and drivers, load and concatenate kernel sources, and manage
-    dependency-annotated .cl libraries—so packages like nmathopencl (and other
-    ported libraries) can offer GPU acceleration without each reimplementing
-    the same plumbing.
+    dependency-annotated '.cl' libraries, so packages like 'nmathopencl' and
+    other ported libraries can offer GPU acceleration without each reimplementing
+    the same plumbing. Vignettes use the 'glmbayes' envelope-gradient example
+    and likelihood subgradient methodology (Nygren and Nygren, 2006,
+    <doi:10.1198/016214506000000357>).
 License: GPL-2
 URL: https://github.com/knygren/opencltools, https://knygren.r-universe.dev/opencltools
 BugReports: https://github.com/knygren/opencltools/issues

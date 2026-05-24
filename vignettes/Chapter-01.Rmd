@@ -369,3 +369,17 @@ Older GPUs (Polaris, Vega, Navi 1x/2x) are **not supported** by ROCm.
 - **Mesa Rusticl**: community OpenCL implementation; may work but is not
   officially supported.
 - **AMDGPU‑PRO OpenCL**: legacy and not recommended.
+
+---
+
+# References
+
+Stone, J. E., Gohara, D., & Shi, G. (2010). OpenCL: A Parallel Programming
+Standard for Heterogeneous Computing Systems. *IEEE Computing in Science &
+Engineering*, 12(3), 66–72. <https://doi.org/10.1109/MCSE.2010.69>
+
+Khronos OpenCL Working Group. *The OpenCL Specification* and *The OpenCL C
+Specification*. <https://www.khronos.org/opencl/>
+
+OpenCL and the OpenCL logo are trademarks of Apple Inc. used by permission by
+Khronos.

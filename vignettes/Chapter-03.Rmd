@@ -316,3 +316,18 @@ package that lists `opencltools` under `LinkingTo`.
 - **`?load_kernel_source`**, **`?load_kernel_library`**
 - **`?load_library_for_kernel`**
 - **`glmbayes::EnvelopeEval`**, **`glmbayes::EnvelopeBuild`** — reference implementation
+
+---
+
+# References
+
+Nygren, K. N., & Nygren, L. M. (2006). Likelihood subgradient densities.
+*Journal of the American Statistical Association*, 101(475), 1144–1156.
+<https://doi.org/10.1198/016214506000000357>
+
+The `f2_f3_*` kernels documented here evaluate negative log-posterior and
+gradient terms that feed the likelihood-subgradient envelope construction
+from this paper.
+
+Nygren, K. N. (2026). *opencltools: OpenCL Tools for R Package Developers*.
+R package. `citation("opencltools")`.
