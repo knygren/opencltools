@@ -67,17 +67,17 @@ Rcpp::List f2_f3_opencl(
 #ifdef USE_OPENCL
   
   std::string OPENCL_source           = load_kernel_source("OPENCL.cl");
-  std::string libr_shims_source       = load_kernel_library("libR_shims", "nmathopencl", false);
-  std::string r_ext_types_source      = load_kernel_library("R_ext_types", "nmathopencl", false);
-  std::string r_shims_source          = load_kernel_library("R_shims", "nmathopencl", false);
-  std::string r_ext_runtime_source    = load_kernel_library("R_ext_runtime", "nmathopencl", false);
-  std::string r_ext_internals_source  = load_kernel_library("R_ext_internals", "nmathopencl", false);
-  std::string system_source           = load_kernel_library("System", "nmathopencl", false);
+  std::string libr_shims_source       = load_kernel_library("libR_shims", "opencltools", false);
+  std::string r_ext_types_source      = load_kernel_library("R_ext_types", "opencltools", false);
+  std::string r_shims_source          = load_kernel_library("R_shims", "opencltools", false);
+  std::string r_ext_runtime_source    = load_kernel_library("R_ext_runtime", "opencltools", false);
+  std::string r_ext_internals_source  = load_kernel_library("R_ext_internals", "opencltools", false);
+  std::string system_source           = load_kernel_library("System", "opencltools", false);
   // Old approach — loads all 137 nmath files with full topological sort:
-  // std::string nmath_source = load_kernel_library("nmath", "nmathopencl", false);
+  // std::string nmath_source = load_kernel_library("nmath", "opencltools", false);
   // Old sequence retained for reference during migration:
-  // std::string rmath_source = load_kernel_library("rmath","nmathopencl", false);
-  // std::string dpq_source   = load_kernel_library("dpq","nmathopencl", false);
+  // std::string rmath_source = load_kernel_library("rmath","opencltools", false);
+  // std::string dpq_source   = load_kernel_library("dpq","opencltools", false);
   
   
   if (family == "binomial"||family == "quasibinomial") {
@@ -126,7 +126,7 @@ Rcpp::List f2_f3_opencl(
   // New approach — reads @all_depends_nmath from the kernel file (full
   // pre-computed transitive list) and loads those files in index order:
   std::string nmath_source = load_library_for_kernel(
-      kernel_file, "ex_glmbayes_nmath", "nmathopencl", "all_depends_nmath");
+      kernel_file, "ex_glmbayes_nmath", "opencltools", "all_depends_nmath");
   
   
   // load & call kernel runner

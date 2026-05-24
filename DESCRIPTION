@@ -1,8 +1,8 @@
-Package: nmathopencl
+Package: opencltools
 Type: Package
-Title: OpenCL-Ported R Mathlib for GPU-Accelerated Packages
+Title: OpenCL Tools for R Package Developers
 Version: 0.1.0
-Date: 2026-04-30
+Date: 2026-05-23
 Authors@R: c(
     person("Kjell", "Nygren", role = c("aut", "cre"),
            email = "kjell.a.nygren@gmail.com"),
@@ -21,17 +21,14 @@ Authors@R: c(
     person("Martin", "Maechler", role = "ctb",
            comment = "Portions of R Mathlib")
     )
-Description: Ships statistical and mathematical routines from R internal
-    'nmath' (Mathlib) as OpenCL C sources under directory 'inst/cl/', with R
-    wrappers that use the GPU when 'OpenCL' is available at compile time and
-    fall back to 'stats' equivalents otherwise. Aimed at package developers
-    building custom kernels (for example Bayesian GLMs via suggested package
-    'glmbayes') using 'load_kernel_library()' and related helpers. Contains
-    translated shims, an illustrative GLM-related kernel subsystem, vignettes,
-    and optional GPU acceleration.
+Description: opencltools provides runtime OpenCL support for R: probe hardware
+    and drivers, load and concatenate kernel sources, and manage
+    dependency-annotated .cl libraries—so packages like nmathopencl (and other
+    ported libraries) can offer GPU acceleration without each reimplementing
+    the same plumbing.
 License: GPL-2
-URL: https://github.com/knygren/nmathopencl, https://knygren.r-universe.dev/nmathopencl
-BugReports: https://github.com/knygren/nmathopencl/issues
+URL: https://github.com/knygren/opencltools, https://knygren.r-universe.dev/opencltools
+BugReports: https://github.com/knygren/opencltools/issues
 Imports:
     stats,
     Rcpp (>= 1.1.1),
@@ -40,18 +37,14 @@ Imports:
     jsonlite
 RdMacros: Rdpack
 LinkingTo: Rcpp, RcppArmadillo, RcppParallel
-Depends: MASS, R (>= 3.5.0)
+Depends: R (>= 3.5.0)
 Suggests:
-    glmbayes (>= 0.9.3),
-    knitr,
-    rmarkdown,
     testthat (>= 3.0.0),
     spelling
 SystemRequirements: Optional OpenCL support. If available, GPU acceleration will be used; otherwise, computation runs on CPU. 
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
-VignetteBuilder: knitr
 Config/testthat/edition: 3
 LazyData: false
 Language: en-US

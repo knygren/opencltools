@@ -10,7 +10,7 @@
     return(.nmath_known_failures_json_cache[[key]])
 
   json_path <- system.file("extdata", "opencl_known_failures.json",
-                           package = "nmathopencl")
+                           package = "opencltools")
   out <- NULL
   if (!nzchar(json_path) || !file.exists(json_path)) {
     .nmath_known_failures_json_cache[[key]] <- out

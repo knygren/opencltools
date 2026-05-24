@@ -92,12 +92,12 @@ int detect_num_gpus_internal();
 // -------------------------------------------------------------------------
 std::string load_kernel_source_wrapper(
     std::string relative_path,
-    std::string package = "nmathopencl"
+    std::string package = "opencltools"
 );
 
 std::string load_kernel_library_wrapper(
     std::string subdir,
-    std::string package = "nmathopencl",
+    std::string package = "opencltools",
     bool verbose = false
 );
 
@@ -115,19 +115,19 @@ int get_opencl_core_count();
 // -------------------------------------------------------------------------
 std::string load_kernel_source(
     const std::string& relative_path,
-    const std::string& package = "nmathopencl"
+    const std::string& package = "opencltools"
 );
 
 std::string load_kernel_library(
     const std::string& subdir,
-    const std::string& package = "nmathopencl",
+    const std::string& package = "opencltools",
     bool verbose = false
 );
 
 std::string load_library_for_kernel(
     const std::string& kernel_relative_path,
     const std::string& library_subdir,
-    const std::string& package    = "nmathopencl",
+    const std::string& package    = "opencltools",
     const std::string& depends_tag = "depends_nmath"
 );
 

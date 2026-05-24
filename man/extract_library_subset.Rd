@@ -69,8 +69,8 @@ the files with \link{write_kernel_dependency_index}, for example after porting v
 \verb{nmathtools/port_inst_cl_nmath_from_src.R} in the \code{openclport}
 package source tree.
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{lib_dir <- system.file("cl/nmath", package = "nmathopencl")
-src_dir <- system.file("cl/ex_glmbayes_src", package = "nmathopencl")
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{lib_dir <- system.file("cl/nmath", package = "opencltools")
+src_dir <- system.file("cl/ex_glmbayes_src", package = "opencltools")
 kernel_paths <- sort(Sys.glob(file.path(src_dir, "*.cl")))
 dest_dir <- tempfile("ex_subset"); dir.create(dest_dir)
 ## on.exit(unlink(dest_dir, recursive = TRUE), add = TRUE)
@@ -87,8 +87,8 @@ result <- extract_library_subset(
 ############################ Start of extract_library_subset example #########################
 
 \donttest{
-lib_dir <- system.file("cl/nmath", package = "nmathopencl")
-src_dir <- system.file("cl/ex_glmbayes_src", package = "nmathopencl")
+lib_dir <- system.file("cl/nmath", package = "opencltools")
+src_dir <- system.file("cl/ex_glmbayes_src", package = "opencltools")
 kernel_paths <- sort(Sys.glob(file.path(src_dir, "*.cl")))
 dest_dir <- tempfile("exglmbsubset")
 dir.create(dest_dir)
@@ -109,9 +109,9 @@ sum(df$copied)
 \seealso{
 \link[=kernel_lib_subset_printing]{printing methods}
 
-\link[nmathopencl]{load_library_for_kernel}
+\link{load_library_for_kernel}
 
-\link[nmathopencl]{write_kernel_dependency_index}
+\link{write_kernel_dependency_index}
 
 Other OpenCL kernel library subsets: 
 \code{\link{load_library_for_kernel}()},

@@ -13,7 +13,7 @@
 #'
 #' ```r
 #' nmath_dir <- system.file(
-#'   "cl", "nmath", package = "nmathopencl")
+#'   "cl", "nmath", package = "opencltools")
 #' idx <- readRDS(file.path(nmath_dir, "kernel_dependency_index.rds"))
 #'
 #' attach_cross_library_tags(

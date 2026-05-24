@@ -16,7 +16,7 @@ load_library_for_kernel(
 for the annotation tag given by \code{depends_tag}.}
 
 \item{library_dir}{Path to the library directory containing the \code{.cl} source
-files (e.g. \code{system.file("cl/nmath", package = "nmathopencl")}).}
+files (e.g. \code{system.file("cl/nmath", package = "opencltools")}).}
 
 \item{depends_tag}{Name of the annotation tag in the kernel file that lists
 the required library file stems.  Defaults to \code{"all_depends"}.  For
@@ -44,10 +44,10 @@ and passing \code{index =} avoids redundant disk reads.  The bundled
 porting (for example via \verb{nmathtools/port_inst_cl_nmath_from_src.R} in the
 \code{openclport} package source tree).
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{lib_dir <- system.file("cl/nmath", package = "nmathopencl")
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{lib_dir <- system.file("cl/nmath", package = "opencltools")
 kpath <- system.file(
   "cl/ex_glmbayes_src/f2_f3_binomial_logit.cl",
-  package = "nmathopencl"
+  package = "opencltools"
 )
 src <- load_library_for_kernel(
   kpath, lib_dir,
@@ -67,10 +67,10 @@ the declared / loaded stems, \code{\link{warning}(...)} points to fragile ports.
 ############################ Start of load_library_for_kernel example ########################
 
 \donttest{
-lib_dir <- system.file("cl/nmath", package = "nmathopencl")
+lib_dir <- system.file("cl/nmath", package = "opencltools")
 kpath <- system.file(
   "cl/ex_glmbayes_src/f2_f3_binomial_logit.cl",
-  package = "nmathopencl"
+  package = "opencltools"
 )
 src <- load_library_for_kernel(
   kpath, lib_dir,
@@ -85,11 +85,11 @@ nzchar(src)
 ###############################################################################
 }
 \seealso{
-\link[nmathopencl]{extract_library_subset}
+\link{extract_library_subset}
 
 \link[=kernel_lib_subset_printing]{printing methods}
 
-\link[nmathopencl]{write_kernel_dependency_index}
+\link{write_kernel_dependency_index}
 
 Other OpenCL kernel library subsets: 
 \code{\link{extract_library_subset}()},

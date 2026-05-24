@@ -36,7 +36,7 @@ other R developers can reuse.
 
 `nmathopencl` solves this by providing the ported sources as a **distributable
 R package**. Install `nmathopencl`, and the ported OpenCL C files are available
-on disk at `system.file("cl", package = "nmathopencl")`. Any R package that
+on disk at `system.file("cl", package = "opencltools")`. Any R package that
 lists `nmathopencl` as a dependency can find those files at runtime and include
 them in its own OpenCL program builds.
 
@@ -116,7 +116,7 @@ runtime by concatenating source layers in a fixed dependency order:
    arithmetic and defines IEEE constants.
 2. The full `nmathopencl` layer --- `libR_shims`, `R_ext_types`, `R_shims`,
    `R_ext_runtime`, `R_ext_internals`, `System`, and `nmath` --- loaded in that
-   order via `load_kernel_library(..., package = "nmathopencl")`. This makes
+   order via `load_kernel_library(..., package = "opencltools")`. This makes
    functions like `lgamma`, `lbeta`, `dbinom`, and `dpois` available as
    device-side functions.
 3. The model- and link-specific kernel (e.g. `f2_f3_binomial_logit.cl`), which
@@ -157,7 +157,7 @@ The assembly of an OpenCL program is done in **C++** using **`load_kernel_source
 and **`load_kernel_library()`**. **`glmbayes`** ships reference call sites (`f2_f3_opencl`, etc.);
 **`nmathopencl`** also exports **`load_kernel_library()`** / **`load_kernel_source()`**
 so sibling packages can **Import** **`nmathopencl`** directly while **`glmbayes` gradually
-drops duplicate loaders. Together they resolve file discovery under **`system.file("cl/", package = "nmathopencl")`**,
+drops duplicate loaders. Together they resolve file discovery under **`system.file("cl/", package = "opencltools")`**,
 parse **`@provides`** / **`@depends`**, and concatenate each requested subtree in dependency order ---
 you nominate a subdirectory name (**`nmath`**, **`System`**, …), not every filename.
 
@@ -168,13 +168,13 @@ The full load order that `glmbayes` uses (reflected in `f2_f3_opencl`) is:
 std::string OPENCL_source          = load_kernel_source("OPENCL.cl");
 
 // 2-7. The nmathopencl layer, loaded in dependency order from nmathopencl's inst/cl/
-std::string libr_shims_source      = load_kernel_library("libR_shims",     "nmathopencl", false);
-std::string r_ext_types_source     = load_kernel_library("R_ext_types",    "nmathopencl", false);
-std::string r_shims_source         = load_kernel_library("R_shims",        "nmathopencl", false);
-std::string r_ext_runtime_source   = load_kernel_library("R_ext_runtime",  "nmathopencl", false);
-std::string r_ext_internals_source = load_kernel_library("R_ext_internals","nmathopencl", false);
-std::string system_source          = load_kernel_library("System",         "nmathopencl", false);
-std::string nmath_source           = load_kernel_library("nmath",          "nmathopencl", false);
+std::string libr_shims_source      = load_kernel_library("libR_shims",     "opencltools", false);
+std::string r_ext_types_source     = load_kernel_library("R_ext_types",    "opencltools", false);
+std::string r_shims_source         = load_kernel_library("R_shims",        "opencltools", false);
+std::string r_ext_runtime_source   = load_kernel_library("R_ext_runtime",  "opencltools", false);
+std::string r_ext_internals_source = load_kernel_library("R_ext_internals","opencltools", false);
+std::string system_source          = load_kernel_library("System",         "opencltools", false);
+std::string nmath_source           = load_kernel_library("nmath",          "opencltools", false);
 
 // 8. Your model-specific kernel source
 std::string ksrc = load_kernel_source("src/my_kernel.cl");
@@ -192,8 +192,8 @@ std::string all_src = OPENCL_source
 ```
 
 The key point is steps 2-7: these are the layers from `nmathopencl`, loaded
-via the `package = "nmathopencl"` argument so that `load_kernel_library`
-finds them at `system.file("cl/<subdir>", package = "nmathopencl")`. Together
+via the `package = "opencltools"` argument so that `load_kernel_library`
+finds them at `system.file("cl/<subdir>", package = "opencltools")`. Together
 they satisfy all of nmath's type, macro, and runtime dependencies.
 Step 8 is entirely your own code. Inside `my_kernel.cl` you can call any
 nmath function --- `lgamma`, `lbeta`, `pbeta`, `dnorm`, `rgamma`, and so on ---

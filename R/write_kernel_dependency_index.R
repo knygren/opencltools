@@ -31,8 +31,8 @@
 #'     consistent with global load order).
 #'   - `n_files`: file count.
 #'
-#' @seealso \link[nmathopencl]{load_library_for_kernel}
-#' @seealso \link[nmathopencl]{extract_library_subset}
+#' @seealso \link{load_library_for_kernel}
+#' @seealso \link{extract_library_subset}
 #' @family OpenCL kernel library subsets
 #'
 #' @export

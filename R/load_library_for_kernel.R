@@ -12,10 +12,10 @@
 #' \code{openclport} package source tree).
 #'
 #' ```r
-#' lib_dir <- system.file("cl/nmath", package = "nmathopencl")
+#' lib_dir <- system.file("cl/nmath", package = "opencltools")
 #' kpath <- system.file(
 #'   "cl/ex_glmbayes_src/f2_f3_binomial_logit.cl",
-#'   package = "nmathopencl"
+#'   package = "opencltools"
 #' )
 #' src <- load_library_for_kernel(
 #'   kpath, lib_dir,
@@ -25,7 +25,7 @@
 #' @param kernel_path Path to a single `.cl` kernel file.  The file is scanned
 #'   for the annotation tag given by `depends_tag`.
 #' @param library_dir Path to the library directory containing the `.cl` source
-#'   files (e.g. `system.file("cl/nmath", package = "nmathopencl")`).
+#'   files (e.g. `system.file("cl/nmath", package = "opencltools")`).
 #' @param depends_tag Name of the annotation tag in the kernel file that lists
 #'   the required library file stems.  Defaults to `"all_depends"`.  For
 #'   kernels annotated with `@all_depends_nmath`, pass
@@ -46,9 +46,9 @@
 #'   concatenation). Attachments describe requested and loaded library stems,
 #'   paths, and byte size; see \link[=kernel_lib_subset_printing]{print methods}.
 #'
-#' @seealso \link[nmathopencl]{extract_library_subset}
+#' @seealso \link{extract_library_subset}
 #' @seealso \link[=kernel_lib_subset_printing]{printing methods}
-#' @seealso \link[nmathopencl]{write_kernel_dependency_index}
+#' @seealso \link{write_kernel_dependency_index}
 #' @family OpenCL kernel library subsets
 #'
 #' @example inst/examples/Ex_load_library_for_kernel.R

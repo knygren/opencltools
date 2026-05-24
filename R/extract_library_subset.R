@@ -17,8 +17,8 @@
 #' package source tree.
 #'
 #' ```r
-#' lib_dir <- system.file("cl/nmath", package = "nmathopencl")
-#' src_dir <- system.file("cl/ex_glmbayes_src", package = "nmathopencl")
+#' lib_dir <- system.file("cl/nmath", package = "opencltools")
+#' src_dir <- system.file("cl/ex_glmbayes_src", package = "opencltools")
 #' kernel_paths <- sort(Sys.glob(file.path(src_dir, "*.cl")))
 #' dest_dir <- tempfile("ex_subset"); dir.create(dest_dir)
 #' ## on.exit(unlink(dest_dir, recursive = TRUE), add = TRUE)
@@ -63,8 +63,8 @@
 #'   }
 #'
 #' @seealso \link[=kernel_lib_subset_printing]{printing methods}
-#' @seealso \link[nmathopencl]{load_library_for_kernel}
-#' @seealso \link[nmathopencl]{write_kernel_dependency_index}
+#' @seealso \link{load_library_for_kernel}
+#' @seealso \link{write_kernel_dependency_index}
 #' @family OpenCL kernel library subsets
 #'
 #' @example inst/examples/Ex_extract_library_subset.R

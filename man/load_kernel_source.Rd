@@ -5,9 +5,9 @@
 \alias{load_kernel_library}
 \title{Load OpenCL Kernel Source Files}
 \usage{
-load_kernel_source(relative_path, package = "nmathopencl")
+load_kernel_source(relative_path, package = "opencltools")
 
-load_kernel_library(subdir, package = "nmathopencl", verbose = FALSE)
+load_kernel_library(subdir, package = "opencltools", verbose = FALSE)
 }
 \arguments{
 \item{relative_path}{A file path inside the package's \verb{cl/} directory.

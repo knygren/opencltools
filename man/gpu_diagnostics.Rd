@@ -91,23 +91,17 @@ prints a detailed, human-readable report. Lower-level helpers can be
 called individually for programmatic inspection or automated testing.
 }
 \details{
-GPU acceleration speeds up \strong{envelope construction and grid evaluation}
-(e.g. large \eqn{3^p} grids or many tangency evaluations) when you pass
-\code{use_opencl = TRUE} in modeling and envelope functions such as
-\code{\link{Ex_EnvelopeEval}} and related envelope functions. OpenCL is \strong{vendor-neutral}
-(NVIDIA, AMD, Intel); CPU-only builds remain valid and are often used when
+GPU acceleration speeds up embarrassingly parallel kernel workloads when a
+downstream package passes \code{use_opencl = TRUE} to its own OpenCL-backed
+entry points (for example envelope evaluation in \pkg{glmbayes}). OpenCL is
+\strong{vendor-neutral} (NVIDIA, AMD, Intel); CPU-only builds remain valid when
 no OpenCL stack is present.
 
-\strong{Practical setup (summary).} Prebuilt binaries from CRAN or R-Universe
-are typically built \strong{without} OpenCL GPU support; enabling the GPU path
-usually requires installing \pkg{glmbayes} \strong{from source} on a machine
+\strong{Practical setup (summary).} Prebuilt binaries from CRAN or R-universe
+are often built \strong{without} OpenCL GPU support; enabling the GPU path
+usually requires installing the consuming package \strong{from source} on a machine
 with OpenCL \strong{headers}, a linkable \strong{OpenCL library / ICD loader}, and
-a working \strong{vendor runtime} (GPU driver). You need a normal C/C++
-toolchain (e.g. Rtools on Windows, \code{build-essential} and
-\code{r-base-dev} on Linux, Xcode CLT plus GCC on macOS for source installs).
-Vendor-specific notes (CUDA Toolkit vs Intel SDK vs Khronos headers on
-Windows, \code{opencl-headers} and \code{ocl-icd} packages on Linux, etc.)
-are spelled out in \insertCite{glmbayesChapter12}{nmathopencl}.
+a working \strong{vendor runtime} (GPU driver).
 
 \strong{What this help page checks.} A usable OpenCL environment requires:
 \enumerate{
@@ -186,22 +180,12 @@ These are optional helpers used by the diagnostic pipeline.
 }
 }
 
-\references{
-\insertAllCited{}
-}
 \seealso{
 \code{\link{diagnose_glmbayes}},
 \code{\link{detect_environment_and_gpus}},
 \code{\link{detect_compute_runtimes}},
 \code{\link{verify_opencl_runtime}},
 \code{\link{has_opencl}}.
-
-Envelope construction with \code{use_opencl}: \code{\link{Ex_EnvelopeEval}}.
-Envelope helpers: \code{\link{Ex_EnvelopeEval}}.
-
-Full install and troubleshooting: \code{vignette("Chapter-12", package = "nmathopencl")}
-(\insertCite{glmbayesChapter12}{nmathopencl}); implementation notes:
-\insertCite{glmbayesChapterA10}{nmathopencl}.
 }
 \keyword{diagnostics}
 \keyword{environment}

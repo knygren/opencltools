@@ -410,18 +410,18 @@
 #' @example inst/examples/Ex_load_kernel_source.R
 #'
 #' @export
-load_kernel_source <- function(relative_path, package = "nmathopencl") {
+load_kernel_source <- function(relative_path, package = "opencltools") {
   if (!has_opencl()) {
-    stop("OpenCL support is not available in this build of nmathopencl.")
+    stop("OpenCL support is not available in this build of opencltools.")
   }
   .load_kernel_source_wrapper_cpp(relative_path, package)
 }
 
 #' @rdname load_kernel_source
 #' @export
-load_kernel_library <- function(subdir, package = "nmathopencl", verbose = FALSE) {
+load_kernel_library <- function(subdir, package = "opencltools", verbose = FALSE) {
   if (!has_opencl()) {
-    stop("OpenCL support is not available in this build of nmathopencl.")
+    stop("OpenCL support is not available in this build of opencltools.")
   }
   .load_kernel_library_wrapper_cpp(subdir, package, verbose)
 }
