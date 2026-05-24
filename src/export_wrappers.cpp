@@ -1,29 +1,11 @@
 ﻿#include "RcppArmadillo.h"
 #include "openclPort.h"
-#include "nmathopencl.h"
 
 using namespace openclPort;
 
 // -----------------------------------------------------------------------------
 // R-facing C++ exports for opencltools runtime helpers.
-// Stats/math *_opencl mirror exports were removed with the R wrappers.
 // -----------------------------------------------------------------------------
-
-// [[Rcpp::export]]
-Rcpp::NumericVector r_check_user_interrupt_opencl_cpp_export(
-    int n,
-    bool verbose = false
-) {
-  return nmathopencl::r_check_user_interrupt_opencl(n, verbose);
-}
-
-// [[Rcpp::export]]
-Rcpp::NumericVector r_check_stack_opencl_cpp_export(
-    int n,
-    bool verbose = false
-) {
-  return nmathopencl::r_check_stack_opencl(n, verbose);
-}
 
 // [[Rcpp::export]]
 std::string load_kernel_source_wrapper_cpp_export(

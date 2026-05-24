@@ -11,83 +11,6 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// EnvelopeSize_cpp_export
-Rcpp::List EnvelopeSize_cpp_export(const arma::vec& a, const Rcpp::NumericMatrix& G1, int Gridtype, int n, int n_envopt, bool use_opencl, bool verbose);
-RcppExport SEXP _opencltools_EnvelopeSize_cpp_export(SEXP aSEXP, SEXP G1SEXP, SEXP GridtypeSEXP, SEXP nSEXP, SEXP n_envoptSEXP, SEXP use_openclSEXP, SEXP verboseSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::vec& >::type a(aSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type G1(G1SEXP);
-    Rcpp::traits::input_parameter< int >::type Gridtype(GridtypeSEXP);
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    Rcpp::traits::input_parameter< int >::type n_envopt(n_envoptSEXP);
-    Rcpp::traits::input_parameter< bool >::type use_opencl(use_openclSEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(EnvelopeSize_cpp_export(a, G1, Gridtype, n, n_envopt, use_opencl, verbose));
-    return rcpp_result_gen;
-END_RCPP
-}
-// EnvelopeEval_cpp_export
-Rcpp::List EnvelopeEval_cpp_export(const Rcpp::NumericMatrix& G4, const Rcpp::NumericVector& y, const Rcpp::NumericMatrix& x, const Rcpp::NumericMatrix& mu, const Rcpp::NumericMatrix& P, const Rcpp::NumericVector& alpha, const Rcpp::NumericVector& wt, const std::string& family, const std::string& link, bool use_opencl, bool verbose);
-RcppExport SEXP _opencltools_EnvelopeEval_cpp_export(SEXP G4SEXP, SEXP ySEXP, SEXP xSEXP, SEXP muSEXP, SEXP PSEXP, SEXP alphaSEXP, SEXP wtSEXP, SEXP familySEXP, SEXP linkSEXP, SEXP use_openclSEXP, SEXP verboseSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type G4(G4SEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type mu(muSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type P(PSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type wt(wtSEXP);
-    Rcpp::traits::input_parameter< const std::string& >::type family(familySEXP);
-    Rcpp::traits::input_parameter< const std::string& >::type link(linkSEXP);
-    Rcpp::traits::input_parameter< bool >::type use_opencl(use_openclSEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(EnvelopeEval_cpp_export(G4, y, x, mu, P, alpha, wt, family, link, use_opencl, verbose));
-    return rcpp_result_gen;
-END_RCPP
-}
-// glmb_Standardize_Model_cpp_export
-Rcpp::List glmb_Standardize_Model_cpp_export(const Rcpp::NumericVector& y, const Rcpp::NumericMatrix& x, const Rcpp::NumericMatrix& P, const Rcpp::NumericMatrix& bstar, const Rcpp::NumericMatrix& A1);
-RcppExport SEXP _opencltools_glmb_Standardize_Model_cpp_export(SEXP ySEXP, SEXP xSEXP, SEXP PSEXP, SEXP bstarSEXP, SEXP A1SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type P(PSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type bstar(bstarSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type A1(A1SEXP);
-    rcpp_result_gen = Rcpp::wrap(glmb_Standardize_Model_cpp_export(y, x, P, bstar, A1));
-    return rcpp_result_gen;
-END_RCPP
-}
-// r_check_user_interrupt_opencl_cpp_export
-Rcpp::NumericVector r_check_user_interrupt_opencl_cpp_export(int n, bool verbose);
-RcppExport SEXP _opencltools_r_check_user_interrupt_opencl_cpp_export(SEXP nSEXP, SEXP verboseSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(r_check_user_interrupt_opencl_cpp_export(n, verbose));
-    return rcpp_result_gen;
-END_RCPP
-}
-// r_check_stack_opencl_cpp_export
-Rcpp::NumericVector r_check_stack_opencl_cpp_export(int n, bool verbose);
-RcppExport SEXP _opencltools_r_check_stack_opencl_cpp_export(SEXP nSEXP, SEXP verboseSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(r_check_stack_opencl_cpp_export(n, verbose));
-    return rcpp_result_gen;
-END_RCPP
-}
 // load_kernel_source_wrapper_cpp_export
 std::string load_kernel_source_wrapper_cpp_export(const std::string& relative_path, const std::string& package);
 RcppExport SEXP _opencltools_load_kernel_source_wrapper_cpp_export(SEXP relative_pathSEXP, SEXP packageSEXP) {
@@ -177,11 +100,6 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_opencltools_EnvelopeSize_cpp_export", (DL_FUNC) &_opencltools_EnvelopeSize_cpp_export, 7},
-    {"_opencltools_EnvelopeEval_cpp_export", (DL_FUNC) &_opencltools_EnvelopeEval_cpp_export, 11},
-    {"_opencltools_glmb_Standardize_Model_cpp_export", (DL_FUNC) &_opencltools_glmb_Standardize_Model_cpp_export, 5},
-    {"_opencltools_r_check_user_interrupt_opencl_cpp_export", (DL_FUNC) &_opencltools_r_check_user_interrupt_opencl_cpp_export, 2},
-    {"_opencltools_r_check_stack_opencl_cpp_export", (DL_FUNC) &_opencltools_r_check_stack_opencl_cpp_export, 2},
     {"_opencltools_load_kernel_source_wrapper_cpp_export", (DL_FUNC) &_opencltools_load_kernel_source_wrapper_cpp_export, 2},
     {"_opencltools_load_kernel_library_wrapper_cpp_export", (DL_FUNC) &_opencltools_load_kernel_library_wrapper_cpp_export, 3},
     {"_opencltools_has_opencl_cpp_export", (DL_FUNC) &_opencltools_has_opencl_cpp_export, 0},

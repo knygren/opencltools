@@ -40,15 +40,3 @@
 .gpu_names_cpp <- function() {
   .Call("_opencltools_gpu_names_cpp_export")
 }
-
-#' @noRd
-#' @keywords internal
-.r_check_user_interrupt_opencl <- function(n, verbose = FALSE) {
-  .Call(`_opencltools_r_check_user_interrupt_opencl_cpp_export`, n, verbose)
-}
-
-#' @noRd
-#' @keywords internal
-.r_check_stack_opencl <- function(n, verbose = FALSE) {
-  .Call(`_opencltools_r_check_stack_opencl_cpp_export`, n, verbose)
-}
