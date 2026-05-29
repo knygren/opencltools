@@ -127,7 +127,9 @@ whether this **binary** can run downstream GPU code, not to gate loading.
 
 The C++ equivalents (`openclPort::load_kernel_source`,
 `openclPort::load_kernel_library`, `openclPort::load_library_for_kernel`) are
-available via `LinkingTo: opencltools`.
+declared in `opencltools/openclPort.h` via `LinkingTo: opencltools`. OpenCL C API
+headers (`CL/cl.h`, etc.) are **not** bundled in this package; use your own
+`configure` / SDK paths when compiling with `USE_OPENCL` (see `inst/include/README.md`).
 
 ### Minimal library subsetting for a specific kernel
 

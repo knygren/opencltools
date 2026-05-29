@@ -4,7 +4,8 @@
  *        device discovery, and fp64 capability probing.
  *
  * Installed copy for LinkingTo: opencltools (#include <opencltools/openclPort.h>).
- * Keep in sync with src/openclPort.h.
+ * Keep in sync with src/openclPort.h. Khronos CL headers are not bundled under
+ * include/CL/; downstream configure must add the system/SDK -I paths.
  *
  * @namespace openclPort
  */

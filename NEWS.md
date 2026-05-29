@@ -41,6 +41,12 @@ CRAN resubmission addressing reviewer feedback on **0.8.0**.
   code before **`clBuildProgram`** / kernel dispatch, not before loading
   **`.cl`** sources.
 
+## Headers (`LinkingTo`)
+
+* Remove incomplete bundled **`inst/include/CL/`** (`cl.h` without **`cl_version.h`**).
+  **`LinkingTo: opencltools`** supplies **`opencltools/openclPort.h`** only; each
+  package locates **`CL/cl.h`** via its own **`configure`** / OpenCL SDK.
+
 ## Maintainer
 
 * **`CRAN-SUBMISSION`** added to **`.gitignore`** (local `devtools::submit_cran()` log).

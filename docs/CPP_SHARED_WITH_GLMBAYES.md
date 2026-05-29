@@ -148,7 +148,7 @@ Same shim source in both packages (logic equivalent; line endings may differ).
 | **`opencl_device_selection.cpp`** | **opencltools** fp64 cache API only |
 | **`export_wrappers.cpp`** | **`*_cpp_export`** shims (5 shared + 3 **opencltools**-only) |
 | **`configure_OpenCL.cpp`** | **`configureOpenCL`** |
-| **`inst/include/opencltools/openclPort.h`** | Public header for **`LinkingTo: opencltools`** (mirror of **`src/openclPort.h`**) |
+| **`inst/include/opencltools/openclPort.h`** | Public header for **`LinkingTo: opencltools`** (mirror of **`src/openclPort.h`**). No bundled **`CL/`** headers — each package uses its own OpenCL SDK **`configure`** paths. |
 
 When fixing loader bugs, **`diff`** **`kernel_loader.cpp`** — the shared prefix through **`load_kernel_library`** (~lines 23–173 in **opencltools**, ~30–190 in **glmbayes**) is still largely parallel.
 

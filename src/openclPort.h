@@ -4,7 +4,8 @@
  *        device discovery, and fp64 capability probing.
  *
  * Canonical copy for compilation in src/. Mirror in
- * inst/include/opencltools/openclPort.h for LinkingTo.
+ * inst/include/opencltools/openclPort.h for LinkingTo (OpenCL API headers are
+ * not bundled; each package supplies -I via its own configure).
  *
  * @namespace openclPort
  */

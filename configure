@@ -144,8 +144,8 @@ if [ "$OPENCL_INCLUDE_FOUND" = "yes" ] && [ "$OPENCL_LIB_FOUND" = "yes" ]; then
   OPENCL_FOUND=yes
 
   if [ "$EMSCRIPTEN_BUILD" = "YES" ]; then
-    OPENCL_INCLUDE="${OPENCL_INCLUDE}/CL -I../inst/include"
-    echo "🚀 Emscripten build: using direct CL header folder ${OPENCL_INCLUDE}/CL"
+    OPENCL_INCLUDE="${OPENCL_INCLUDE}/CL"
+    echo "Emscripten build: using OpenCL headers under ${OPENCL_INCLUDE}"
   else
     echo "✅ Enabling OpenCL: include directory ${OPENCL_INCLUDE}"
   fi
