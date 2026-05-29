@@ -1,9 +1,6 @@
 ############################ Start of gpu_diagnostics example ########################
 
-\donttest{
-has_opencl()
-
-## Host-side inventory (no OpenCL runtime required)
+## Host-side inventory (no package USE_OPENCL .cpp)
 info <- detect_environment_and_gpus()
 info$environment
 gpu_names()
@@ -11,8 +8,10 @@ gpu_names()
 runtime <- detect_compute_runtimes(info)
 check_runtime_env(runtime)
 
-## OpenCL device probes (compile tiny programs; skip when unavailable)
+\donttest{
+## OpenCL device probes (package USE_OPENCL .cpp; skip when unavailable)
 if (has_opencl()) {
+  has_opencl()
   opencl_fp64_available()
   opencl_device_info()
   get_opencl_core_count()
