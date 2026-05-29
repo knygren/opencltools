@@ -1,4 +1,4 @@
-#' GPU and OpenCL Diagnostics for glmbayes
+#' GPU and OpenCL Diagnostics for \pkg{glmbayes}
 #'
 #' @description
 #' A collection of tools for detecting GPU hardware, verifying OpenCL

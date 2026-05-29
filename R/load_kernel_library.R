@@ -67,7 +67,7 @@
 #' ensures that the GPU kernels used by \pkg{glmbayes} are reproducible,
 #' modular, and maintainable.
 #'
-#' Mirrors assembly order:\\cr shards, sorted dependency libs,\cr then kernels
+#' Mirrors assembly order:\\cr shards, sorted dependency libraries,\cr then kernels
 #' for GPU submits.
 #'
 #' @section Preparing a Global Configuration Header:
@@ -414,7 +414,7 @@
 #'   }
 #'   \item{\code{load_kernel_library()}}{
 #'     Character scalar: all shards in \code{subdir} concatenated in dependency
-#'     order (plain \code{character}). Same empty-string \code{message()} behaviour.
+#'     order (plain \code{character}). Same empty-string \code{message()} behavior.
 #'     Use \code{verbose = TRUE} for dependency-sort diagnostics. For a subclass
 #'     with stem metadata, see \code{\link{load_library_for_kernel}}.
 #'   }

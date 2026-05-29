@@ -2,7 +2,7 @@
 % Please edit documentation in R/attach_kernel_dependency_tags.R
 \name{attach_kernel_dependency_tags}
 \alias{attach_kernel_dependency_tags}
-\title{Attach Dependency Tags to a Sortable Kernel Library}
+\title{Attach Dependency Tags to a Dependency-Ordered Kernel Library}
 \usage{
 attach_kernel_dependency_tags(library_dir, dry_run = FALSE)
 }

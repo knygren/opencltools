@@ -228,7 +228,7 @@ all resources:
 
 The runner is GLM-specific (it knows the buffer layout for X, B, mu, P,
 alpha, y, wt, qf, grad) but the OpenCL plumbing portion is fully generic.
-The general utilities — kernel loading, device enumeration, fp64 probing —
+The general utilities — kernel loading, device enumeration, `fp64` probing —
 live in `openclPort` and are re-exported by `opencltools` for use by any
 downstream package.
 
@@ -271,7 +271,7 @@ For large workloads (e.g. a tangency grid with > 50,000 points),
 The pilot:
 
 1. **Warm-up** — run the GPU kernel on a tiny slice (10–20 points) to
-   initialise the context and JIT-compile the program.
+   initialize the context and just-in-time (JIT) compile the program.
 2. **Calibration** — run on slices of ~1% and ~2% of the grid, time each.
 3. **Extrapolation** — `refined_est_total_sec = per_grid_sec × m1`.
 4. **5-minute safeguard** — if `refined_est_total_sec > 300`:
@@ -286,7 +286,7 @@ tuned to the specific workload.
 
 # 7. Setting up OpenCL before first use
 
-`glmbayes` calls `configureOpenCL()` during package initialisation to probe
+`glmbayes` calls `configureOpenCL()` during package initialization to probe
 the OpenCL device for native `expm1` and `log1p` support.  The probe
 compiles a tiny test kernel and checks the result:
 
@@ -298,7 +298,7 @@ whether the nmath shims (`expm1.cl`, `log1p.cl`) use the native builtin or
 the ported fallback.
 
 ```cpp
-// In your package's initialisation (e.g., called from .onLoad)
+// In your package's initialization (e.g., called from .onLoad)
 OpenCLConfig cfg = configureOpenCL();
 // cfg.build_options contains -DUSE_OPENCL_EXPM1 etc. as appropriate
 // Pass cfg.build_options to clBuildProgram

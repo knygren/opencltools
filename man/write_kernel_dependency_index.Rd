@@ -20,7 +20,7 @@ When \code{tags} is supplied, must agree with \code{tags$library_dir}.}
 Must have \code{ok = TRUE} when reused to skip resorting.}
 
 \item{output_path}{Path for the RDS file. Defaults to
-\verb{file.path(<library_dir>, "kernel_dependency_index.rds")}. The TSV is
+\verb{file.path(<library_dir>, "kernel_dependency_index.rds")}. The \code{.tsv} file is
 always written to the same directory with the \code{.tsv} extension.}
 
 \item{write}{If \code{FALSE}, builds the index object and returns it without
@@ -37,7 +37,7 @@ Invisibly, the index \code{list()} (\code{version} schema):
 \item \code{stems_ordered}: stems in global load order.
 \item \code{load_order}: named integer vector \code{stem -> rank}.
 \item \code{depends}: named list \code{stem -> character()} (direct \verb{@depends}).
-\item \code{all_depends}: named list \code{stem -> character()} (transitive deps, order
+\item \code{all_depends}: named list \code{stem -> character()} (transitive dependencies, order
 consistent with global load order).
 \item \code{n_files}: file count.
 }
@@ -49,7 +49,7 @@ library directory:
 \details{
 \itemize{
 \item RDS helper shard for loaders such as \link{load_library_for_kernel}.\cr
-\item TSV stem map for C++ (rows \verb{stem<TAB>deps}, pre-sorted).\cr
+\item Tab-separated (\code{.tsv}) stem map for C++ (rows \verb{stem<TAB>dependencies}, pre-sorted).\cr
 }
 
 Both files encode the same information and are always written together so

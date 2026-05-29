@@ -39,7 +39,7 @@ For OpenCL setup and device verification, see Chapter 01.
 
 # 1. Anatomy of a ported library
 
-`nmathopencl` organises its OpenCL‑C source into a top‑level configuration
+[`nmathopencl`](https://knygren.r-universe.dev/nmathopencl) organizes its OpenCL-C source into a top-level configuration
 file and seven subdirectories under `inst/cl/`.  The layout mirrors how R
 itself layers its headers and runtime — each directory provides exactly what
 the directories after it need:
@@ -62,7 +62,7 @@ are already defined.  `load_kernel_library` performs a topological sort
 in the order above.
 
 Each `.cl` shard carries annotation comments that `opencltools` reads to
-determine intra-directory dependency order.
+determine within-directory dependency order.
 
 ## 1.1 Shard annotations
 
@@ -88,12 +88,12 @@ Every library shard declares what it provides and what it depends on:
 
 # 2. The nmath module
 
-The `nmath/` subdirectory of `nmathopencl` contains ~137 ported `.cl` shards.
+The `nmath/` subdirectory of [`nmathopencl`](https://knygren.r-universe.dev/nmathopencl) contains ~137 ported `.cl` shards.
 It includes the anchor files `Rmath.cl` (all distribution function declarations
 and mathematical constants), `nmath.cl` (the core Mathlib header macros),
 `dpq.cl` (R‑style density/CDF macros for `give_log`/`lower_tail` logic), and
 `refactored.cl` (forward declarations needed to break circular dependencies in
-OpenCL's single‑pass compilation model), plus the individual distribution
+the OpenCL single-pass compilation model), plus the individual distribution
 function files.
 
 The table below lists the key infrastructure shards and the shards most
@@ -244,7 +244,7 @@ subdirectory name.
 
 The full assembly in §4 loads all ~137 nmath shards.  For performance it is
 better to include only the shards a specific kernel actually requires — this
-reduces the program source size and cuts first‑call JIT compilation time.
+reduces the program source size and cuts first-call just-in-time (JIT) compilation time.
 
 `load_library_for_kernel()` reads the `@all_depends_nmath` annotation from
 a kernel file (written by `attach_cross_library_tags()`, see §6) and returns
@@ -267,7 +267,7 @@ Substitute this result for the full `load_kernel_library("nmath", ...)` call
 in §4 while keeping all other layers unchanged — the prelude layers
 (`libR_shims`, `R_ext_types`, etc.) are always loaded in full.
 
-This function is implemented natively in C++ and exposed to R as a convenience
+This function is implemented in C++ and exposed to R as a convenience
 wrapper, so it can be called from `*.cpp` inside a kernel runner without
 going back into R.
 

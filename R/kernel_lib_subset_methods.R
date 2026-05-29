@@ -1,11 +1,11 @@
 #' Printing results from minimal kernel-library subset loaders
 #'
 #' \link{load_library_for_kernel} returns a concatenated OpenCL-sources string
-#' with classes \verb{nmathopencl_concatenated_lib}, subclassing \code{character},
+#' with classes \verb{nmathopencl_concatenated_lib}, extending \code{character},
 #' with attributes listing requested and loaded stems in dependency order.
 #'
 #' \link{extract_library_subset} returns classes \verb{nmathopencl_lib_extract_df},
-#' subclassing \code{data.frame}, with paths and tag metadata attached.
+#' extending \code{data.frame}, with paths and tag metadata attached.
 #'
 #' @param x From \link{load_library_for_kernel} or \link{extract_library_subset}.
 #' @param ... Reserved; the extract \code{data.frame} printer does not forward to

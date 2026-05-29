@@ -1,4 +1,4 @@
-#' Attach Dependency Tags to a Sortable Kernel Library
+#' Attach Dependency Tags to a Dependency-Ordered Kernel Library
 #'
 #' Compute and attach derived tags to each `.cl` file in a library:
 #' `@load_order`, `@all_depends`, and `@all_depends_count`.

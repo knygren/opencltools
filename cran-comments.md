@@ -2,63 +2,49 @@
 
 ## Summary
 
-This is a resubmission of **opencltools** (0.8.1) addressing CRAN feedback on
-0.8.0. **opencltools** is a library-agnostic
-runtime toolkit for R package developers who ship optional OpenCL acceleration.
-The package probes hardware and drivers, loads and assembles annotated `.cl`
-kernel libraries, and provides diagnostics helpers. OpenCL is **optional** at
-build and run time: without OpenCL headers/runtime the package builds and runs
-on CPU; GPU paths are used when available.
+Resubmission of **opencltools** **0.8.1** addressing reviewer feedback on
+**0.8.0** (missing **`\value`** sections; examples effectively untested because
+they were largely inside **`\donttest{}`**). Details below and in **NEWS.md**.
 
-## Test environments
+## Response to CRAN feedback
 
-Local checks (Windows, `R CMD check --as-cran` / `devtools::check(cran = TRUE)`):
-0 errors | 0 warnings | 0 notes.
+1. **`\value` sections** — All exported functions and relevant S3 `print()` methods
+   now document return types and meaning (including `gpu_diagnostics`,
+   `load_kernel_source` / `load_kernel_library`, and
+   `kernel_lib_subset_printing`).
 
-* **win-builder** (R-release): 0 errors | 0 warnings | 0 notes on the check
-  itself. CRAN *incoming* NOTE only (see below).
-* **mac-builder** (R-release): 0 errors | 0 warnings | 0 notes.
-* **R-hub** (`rhub::rhub_check()`): clean on the platforms exercised (Linux,
-  Windows, macOS, and selected compiler/sanitizer/rchk configurations).
-* **R-universe** (`https://knygren.r-universe.dev/opencltools`): builds and
-  checks successfully.
+2. **Examples run on check** — Unwrapped **`\donttest{}`** and removed
+   **`if (has_opencl())`** where no GPU is needed at example time:
+   * Host diagnostics; **`load_kernel_source()`** / **`load_kernel_library()`**
+     (file I/O only, all builds).
+   * **`gpu_diagnostics`** (host block always; OpenCL probes stub on CPU-only
+     builds).
+   * Tagging, indexing, subsetting on **`inst/cl/nmath_small/`**.
+   * Only the slow full-**`nmath`** index rebuild (~137 shards) stays in
+     **`\donttest{}`** (runtime, not OpenCL).
 
-Additional GPU/OpenCL smoke testing on a rented Linux VM (Vast.ai) is planned
-but was **not** completed for this submission because instance scheduling was
-delayed. Maintainer scripts for that workflow are in `scripts/` (excluded from
-the tarball via `.Rbuildignore`).
+3. **Kernel loaders on all builds** — C++ loaders always compiled; R wrappers no
+   longer **`stop()`** on **`has_opencl()`**. Empty reads return **`""`** with a
+   **`message()`**. **`has_opencl()`** is for downstream **GPU dispatch**, not for
+   gating **`.cl`** reads.
 
-## CRAN incoming NOTE (win-builder)
+4. **`Suggests: glmbayes (>= 0.9.3)`** — Reference downstream package on CRAN
+   (not required for check).
 
-Win-builder reported a *Possibly misspelled words in DESCRIPTION* NOTE for
-`Nygren`, `subgradient`, and `re-implementing`. These are intentional:
+## Test environments (0.8.1)
 
-* **Nygren** — author surname in the cited reference (same citation wording as
-  my CRAN package **glmbayes**).
-* **subgradient** — standard term in the envelope/likelihood methodology
-  referenced in the Description (also used in **glmbayes**).
-* **re-implementing** — hyphenated verb in the Description.
+`R CMD check --as-cran` / `devtools::check(cran = TRUE)`: 0 errors | 0 warnings
+| 0 notes (local Windows; win-builder; mac-builder; R-hub platforms exercised).
 
-Software name **OpenCL** is single-quoted in the Title, Description, and
-SystemRequirements fields, consistent with **glmbayes**.
+## Optional comments for unchanged items
 
-## Optional OpenCL / CRAN-safe behaviour
-
-* `SystemRequirements` documents optional OpenCL; `configure` falls back to a
-  CPU-only build when OpenCL is absent.
-* Examples that compile or probe OpenCL devices are wrapped in
-  `if (has_opencl()) { ... }` inside `\donttest{}`.
-* OpenCL compile/probe tests use `skip_if_no_opencl()` and `skip_on_cran()` to
-  avoid failures on CPU-only builders and to reduce the risk of a
-  “CPU time vs elapsed” NOTE.
-
-## Check duration
-
-Vignette build can take about 1–2 minutes on remote builders; total check time
-was within normal limits on the platforms above.
+Spelling NOTE on win-builder (**Nygren**, **subgradient**, **re-implementing**),
+quoted **OpenCL** in DESCRIPTION, optional OpenCL **`configure`**, and
+**testthat** `skip_on_cran()` / `skip_if_no_opencl()` are unchanged from **0.8.0**
+(see maintainer archive **`cran-comments-v0.8.0.md`** if needed).
 
 ---
 _This file is listed in `.Rbuildignore` and is not included in the built source
-tarball. When submitting, paste the content above (from Summary through Check
-duration) into the “Optional comments” field on the CRAN submission form at_
-https://cran.r-project.org/submit.html
+tarball. When submitting, paste the content above (from Summary through Optional
+comments for unchanged items) into the “Optional comments” field on the CRAN
+submission form at_ https://cran.r-project.org/submit.html

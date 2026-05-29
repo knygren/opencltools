@@ -4,7 +4,7 @@
 #' pre-annotated library, then writes the discovered dependencies as annotation
 #' tags directly into the kernel files.
 #'
-#' For a library such as `nmathopencl`, each `.cl` shard carries a `@provides`
+#' For a library such as \pkg{nmathopencl}, each `.cl` shard carries a `@provides`
 #' annotation listing the symbols it defines.  This function builds a
 #' **provides map** from those annotations (symbol \eqn{\to} shard stem), scans
 #' each kernel's source (with comments and string literals stripped) for
@@ -18,7 +18,7 @@
 #'   \item{`@depends_<library_tag>: stem1, stem2`}{Library shard stems that
 #'     define the called symbols.}
 #'   \item{`@calls_opencl_builtin: sym | (none)`}{Detected OpenCL work-item and
-#'     synchronisation builtins (standard math builtins excluded).}
+#'     synchronization \code{builtins} (standard math \code{builtins} excluded).}
 #' }
 #'
 #' **Two-step tagging workflow:**
@@ -199,7 +199,7 @@ attach_kernel_call_tags <- function(kernel_paths,
 #    they are part of the mandatory OpenCL C math subset and universally
 #    available.
 #
-# 2. Work-item, synchronisation, atomic, and vector I/O functions: these
+# 2. Work-item, synchronization, atomic, and vector I/O functions: these
 #    have no C standard library equivalent and explicitly signal an OpenCL
 #    execution-model dependency.
 .opencl_nonstd_builtins <- function() {

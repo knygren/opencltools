@@ -4,7 +4,7 @@
 #' library directory:
 #'
 #' - RDS helper shard for loaders such as \link{load_library_for_kernel}.\cr
-#' - TSV stem map for C++ (rows \verb{stem<TAB>deps}, pre-sorted).\cr
+#' - Tab-separated (\code{.tsv}) stem map for C++ (rows \verb{stem<TAB>dependencies}, pre-sorted).\cr
 #'
 #' Both files encode the same information and are always written together so
 #' they remain in sync.
@@ -14,7 +14,7 @@
 #' @param tags Optional attachment result from \link{attach_kernel_dependency_tags}.\cr
 #'   Must have \code{ok = TRUE} when reused to skip resorting.
 #' @param output_path Path for the RDS file. Defaults to
-#'   `file.path(<library_dir>, "kernel_dependency_index.rds")`. The TSV is
+#'   `file.path(<library_dir>, "kernel_dependency_index.rds")`. The \code{.tsv} file is
 #'   always written to the same directory with the `.tsv` extension.
 #' @param write If `FALSE`, builds the index object and returns it without
 #'   writing either file.
@@ -27,7 +27,7 @@
 #'   - `stems_ordered`: stems in global load order.
 #'   - `load_order`: named integer vector `stem -> rank`.
 #'   - `depends`: named list `stem -> character()` (direct `@depends`).
-#'   - `all_depends`: named list `stem -> character()` (transitive deps, order
+#'   - `all_depends`: named list `stem -> character()` (transitive dependencies, order
 #'     consistent with global load order).
 #'   - `n_files`: file count.
 #'

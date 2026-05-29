@@ -13,7 +13,7 @@
 \alias{verify_opencl_runtime}
 \alias{check_runtime_env}
 \alias{gpu_diagnostics}
-\title{GPU and OpenCL Diagnostics for glmbayes}
+\title{GPU and OpenCL Diagnostics for \pkg{glmbayes}}
 \usage{
 diagnose_glmbayes()
 

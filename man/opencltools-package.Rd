@@ -11,7 +11,7 @@ drivers, load and concatenate kernel sources, and manage dependency-annotated
 \code{.cl} libraries. Downstream packages such as \pkg{nmathopencl} ship
 ported kernel trees and call \code{\link{load_kernel_library}} /
 \code{\link{load_library_for_kernel}} from this package rather than
-reimplementing the same plumbing.
+re-implementing the same plumbing.
 }
 \details{
 Typical workflow for a library author:

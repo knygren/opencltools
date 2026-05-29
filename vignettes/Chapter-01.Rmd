@@ -240,7 +240,7 @@ but GPU acceleration is not guaranteed and may fall back to CPU execution.
 
 # 3. Install opencltools from source (for OpenCL)
 
-The CRAN release and prebuilt R‑Universe binaries are built without OpenCL GPU
+The CRAN release and pre-built R-Universe binaries are built without OpenCL GPU
 support.  Install from source on a machine with OpenCL headers and a working
 vendor runtime to enable GPU acceleration.
 
@@ -351,7 +351,7 @@ sudo apt-get install rocm-opencl-runtime
 ```
 
 This installs the AMD OpenCL runtime, the ICD file (`amdocl64.icd`), and
-ROCm's optimised OpenCL implementation.
+ROCm's optimized OpenCL implementation.
 
 ## Supported AMD GPUs
 

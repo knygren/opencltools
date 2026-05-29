@@ -48,7 +48,7 @@ pre-annotated library, then writes the discovered dependencies as annotation
 tags directly into the kernel files.
 }
 \details{
-For a library such as \code{nmathopencl}, each \code{.cl} shard carries a \verb{@provides}
+For a library such as \pkg{nmathopencl}, each \code{.cl} shard carries a \verb{@provides}
 annotation listing the symbols it defines.  This function builds a
 \strong{provides map} from those annotations (symbol \eqn{\to} shard stem), scans
 each kernel's source (with comments and string literals stripped) for
@@ -62,7 +62,7 @@ called in this kernel.}
 \item{\verb{@depends_<library_tag>: stem1, stem2}}{Library shard stems that
 define the called symbols.}
 \item{\verb{@calls_opencl_builtin: sym | (none)}}{Detected OpenCL work-item and
-synchronisation builtins (standard math builtins excluded).}
+synchronization \code{builtins} (standard math \code{builtins} excluded).}
 }
 
 \strong{Two-step tagging workflow:}

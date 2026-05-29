@@ -31,7 +31,7 @@
 #'
 #' @details Subsets come only from each launcher file's transitive
 #' \code{@all_depends_nmath}-style annotations (use \code{\link{attach_cross_library_tags}}
-#' where subgraphs span libraries). Deliberately loading every \verb{.cl} under
+#' where dependency graphs span libraries). Deliberately loading every \verb{.cl} under
 #' \verb{cl/nmath} remains available via \code{\link{load_kernel_library}(..., "nmath")}
 #' where appropriate.
 #'

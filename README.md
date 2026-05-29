@@ -6,9 +6,9 @@
 `opencltools` is a developer toolkit for R packages that want to accelerate
 embarrassingly parallel computations using OpenCL-capable GPUs. It provides
 the runtime plumbing --- device probing, kernel source loading, library
-subsetting, program assembly helpers, and fp64 capability management --- so
+subsetting, program assembly helpers, and `fp64` capability management --- so
 package authors can focus on writing their GPU kernels rather than
-reimplementing the same infrastructure layer each time.
+re-implementing the same infrastructure layer each time.
 
 `opencltools` is **library-agnostic**. It works with any collection of
 OpenCL-ready `.cl` source files, whether those are a full port of an existing
@@ -16,7 +16,7 @@ C library, a partial port of selected routines, or kernels written from
 scratch. There is no dependency on any particular ported library.
 
 [`nmathopencl`](https://knygren.r-universe.dev/nmathopencl) is the first
-distributable example of such a library: an OpenCL-C port of R's Mathlib
+first packaged example of such a library: an OpenCL-C port of R's Mathlib
 (`nmath`) packaged for reuse. It is a natural companion when your kernel
 needs statistical functions, but it is one instance of a pattern that applies
 equally to any other C library you choose to port --- numerical linear
@@ -50,7 +50,7 @@ The canonical example is **Bayesian GLM sampling via likelihood-subgradient
 envelopes** in `glmbayes`, where the bottleneck is gradient evaluation across
 a large parameter grid. The inner math requires statistical functions from
 R's `nmath`, ported to OpenCL C by `nmathopencl`. But the same pattern
-applies to any package where a C library bottleneck can be parallelised:
+applies to any package where a C library bottleneck can be parallelized:
 port the library once, distribute it, and use `opencltools` to assemble
 programs that consume it.
 
@@ -61,10 +61,10 @@ programs that consume it.
 | Package | Role |
 |---------|------|
 | **`opencltools`** | Runtime plumbing: device probing, kernel loading, library subsetting, program build helpers. Library-agnostic — works with any ported `.cl` library. |
-| **`nmathopencl`** | *Example ported library.* OpenCL-C ports of R's nmath (>130 statistical functions), distributed as installable `.cl` files with dependency annotations. The first of potentially many such libraries. |
+| **`nmathopencl`** | *Example ported library.* OpenCL-C ports of R's nmath (>130 statistical functions), distributed as `.cl` files with dependency annotations (shipped with the package). The first of potentially many such libraries. |
 | **`glmbayes`** | *Reference downstream package.* Bayesian GLM sampling with optional GPU acceleration of envelope gradient evaluation via `f2_f3_opencl`, using `nmathopencl` as its ported library and `opencltools` as the loader layer. |
 
-Any other ported C library can occupy the role that `nmathopencl` plays here.
+Any other ported C library can occupy the role that [`nmathopencl`](https://knygren.r-universe.dev/nmathopencl) plays here.
 The `opencltools` infrastructure does not know or care what library it is
 loading — it reads annotated `.cl` files, resolves dependency order, and
 returns concatenated source strings.
@@ -111,7 +111,7 @@ ready for `clCreateProgramWithSource`. This step is **file I/O only** --- it
 does not call the OpenCL driver or GPU. It works on **every** build of
 `opencltools`, including CPU-only CRAN binaries. The `package` argument
 names whichever installed package ships the `.cl` tree (`opencltools`,
-`nmathopencl`, your own package, etc.):
+[`nmathopencl`](https://knygren.r-universe.dev/nmathopencl), your own package, etc.):
 
 ```r
 # Single shard (example from opencltools inst/cl)
@@ -133,7 +133,7 @@ available via `LinkingTo: opencltools`.
 
 `load_library_for_kernel()` reads the dependency annotation on your launcher
 `.cl` file and concatenates only the library shards that kernel actually
-needs, rather than the entire library. This reduces first-call JIT
+needs, rather than the entire library. This reduces first-call just-in-time (JIT)
 compilation time and keeps the program source small. It works with any
 annotated `.cl` library --- not just `nmath`:
 
@@ -150,7 +150,7 @@ print(src)   # S3: nmathopencl_concatenated_lib (stems, size; not full source)
 
 Returns a `character` vector with class `nmathopencl_concatenated_lib` and
 attributes listing requested/loaded stems. `extract_library_subset()` yields
-`nmathopencl_lib_extract_df` for vendoring a copied subset.
+`nmathopencl_lib_extract_df` for shipping a copied subset.
 
 The C++ equivalent `openclPort::load_library_for_kernel(...)` is provided for
 use inside kernel runner code where calling back into R from C++ is
@@ -175,7 +175,7 @@ library:
 | `attach_kernel_call_tags()` | **Step 1** — scan your kernel source, match calls against a library's `@provides` list, write `@calls_<tag>` and `@depends_<tag>` into the kernel files. No manual tagging needed. |
 | `attach_cross_library_tags()` | **Step 2** — read `@depends_<tag>`, compute the full transitive closure against the library index, write `@all_depends_<tag>` back into the kernel files |
 | `load_library_for_kernel()` | At runtime (or interactively), read `@all_depends_<tag>` from a kernel file and concatenate only the library shards it needs, in dependency order. Emits warnings for known-problematic stems. |
-| `extract_library_subset()` | Materialise a kernel-specific subset into a vendored directory (for packages that want to ship their own copy of the needed shards) |
+| `extract_library_subset()` | Materialize a kernel-specific subset into a local directory (for packages that want to ship their own copy of the needed shards) |
 | `write_kernel_dependency_index()` | Regenerate `kernel_dependency_index.rds` / `.tsv` after updating a library tree |
 
 ### Documentation
@@ -351,12 +351,12 @@ and returns results as Rcpp objects.
 
 The `use_opencl` flag is the key to graceful degradation. Every entry point
 that dispatches to a GPU should have a CPU fallback and accept a `use_opencl`
-argument. When OpenCL is unavailable (no ICD, no fp64, driver fault), the
+argument. When OpenCL is unavailable (no ICD, no `fp64`, driver fault), the
 code transparently routes to the CPU path. Machines without a GPU install and
 run the package without any changes to user code.
 
 ```cpp
-// in EnvelopeEval.cpp (simplified from glmbayes)
+// in EnvelopeEval.cpp (simplified from `glmbayes`)
 if (use_opencl) {
   prepGrad = f2_f3_opencl(family, link, G4, y, x, mu, P, alpha, wt, progbar);
 } else {
@@ -387,7 +387,7 @@ structure that makes GPU dispatch valuable. The inner math requires
 GLM family and link. `glmbayes` sources these from `nmathopencl` via
 `opencltools` loaders.
 
-### Program assembly in glmbayes
+### Program assembly in `glmbayes`
 
 `load_likelihood_subgradient_program(family, link, package)` in
 `glmbayes/src/kernel_loader.cpp` assembles the complete OpenCL program source
@@ -418,7 +418,7 @@ Users on machines without a GPU experience no difference in API surface.
 
 ### Performance notes
 
-The first call to `f2_f3_opencl` in a session triggers JIT compilation of the
+The first call to `f2_f3_opencl` in a session triggers just-in-time (JIT) compilation of the
 assembled source by the OpenCL driver. For a program that includes substantial
 nmath content, this can take several seconds. Subsequent calls reuse the
 compiled kernel; the marginal overhead drops to context setup, buffer
@@ -440,7 +440,7 @@ install.packages(
 
 The package **installs on CPU-only systems**. Reading and assembling `.cl`
 sources works without OpenCL headers at build time. Optional OpenCL at
-compile time enables `has_opencl() == TRUE`, device probes, and fp64 selection
+compile time enables `has_opencl() == TRUE`, device probes, and `fp64` selection
 for packages that compile and run kernels on a GPU (NVIDIA, AMD, Intel, etc.).
 Downstream code should use a `use_opencl` flag (or equivalent) and probe
 `has_opencl()` / `opencl_fp64_available()` before dispatch, not before loading
@@ -456,12 +456,12 @@ index, following the `Chapter-NN` convention used by `glmbayes`.
 | Vignette file | Status | Title |
 |---------------|--------|-------|
 | `Chapter-01` | ✓ | **Getting started** — Setting up OpenCL, verifying the runtime, first kernel load |
-| `Chapter-02` | ✓ | **Using a ported library** — Annotating kernels, assembling programs, subsetting a `.cl` library (`nmathopencl` as the worked example) |
-| `Chapter-03` | ✓ | **Kernel runners and wrappers** — The runner/wrapper pattern from `glmbayes`, graceful fallback |
+| `Chapter-02` | ✓ | **Using a ported library** — Annotating kernels, assembling programs, subsetting a `.cl` library ([`nmathopencl`](https://knygren.r-universe.dev/nmathopencl) as the worked example) |
+| `Chapter-03` | ✓ | **Kernel runners and wrappers** — The runner/wrapper pattern from [`glmbayes`](https://github.com/knygren/glmbayes), graceful fallback |
 | `Chapter-00` | planned | **Introduction** — What opencltools is and when to use it |
 | `Chapter-04` | planned | **Testing and parity validation** — Verifying numerical accuracy of ported device code before production use |
 | `Chapter-A01` | planned | **Appendix: Kernel annotation in depth** — `attach_kernel_call_tags`, `attach_cross_library_tags`, dependency closure, `@depends` vs `@all_depends`, index format |
-| `Chapter-A02` | planned | **Appendix: Vendoring a library subset** — Using `extract_library_subset` and `write_kernel_dependency_index` to ship a minimal shard tree with your package |
+| `Chapter-A02` | planned | **Appendix: Shipping a library subset** — Using `extract_library_subset` and `write_kernel_dependency_index` to ship a minimal shard tree with your package |
 
 ---
 
@@ -471,7 +471,7 @@ index, following the `Chapter-NN` convention used by `glmbayes`.
 
 Nygren, K. N. (2026). *opencltools: OpenCL Tools for R Package Developers*.
 R package. Use `citation("opencltools")` for BibTeX and a layered set of
-related entries (methodology, OpenCL, glmbayes).
+related entries (methodology, OpenCL, `glmbayes`).
 
 ### Methodology in the worked example (`f2_f3_*` kernels)
 
@@ -500,7 +500,7 @@ Khronos.
 
 ### Related R packages
 
-- **nmathopencl** — example ported statistical library used in vignettes
-- **glmbayes** — reference downstream application and source of the
+- [`nmathopencl`](https://knygren.r-universe.dev/nmathopencl) — example ported statistical library used in vignettes
+- [`glmbayes`](https://github.com/knygren/glmbayes) — reference downstream application and source of the
   runner/wrapper pattern; portions of the runtime layer were adapted during
-  the split from glmbayes
+  the split from `glmbayes`

@@ -49,7 +49,7 @@ CRAN resubmission addressing reviewer feedback on **0.8.0**.
 
 First CRAN release. Version **0.8.0** (rather than 0.1.0) signals that the
 runtime toolkit is substantially complete and ready for downstream packages
-(**nmathopencl**, **glmbayes**, and others) to link against, while leaving
+(`nmathopencl`, `glmbayes`, and others) to link against, while leaving
 room for integration-driven patch releases (planned **0.8.x**) and developer
 feedback before a **1.0.0** API freeze.
 
@@ -82,7 +82,7 @@ annotation helpers.
   transitive closure and write `@all_depends_<tag>`.
 * **`attach_kernel_dependency_tags()`**, **`write_kernel_dependency_index()`**,
   **`stage_kernel_dependency_sort()`**, and **`extract_library_subset()`** for
-  annotating, indexing, sorting, and vendoring `.cl` library trees.
+  annotating, indexing, sorting, and shipping `.cl` library subsets.
 * Curated **`opencl_known_failures.json`** with warnings when loading stems
   with known portability issues.
 
@@ -90,10 +90,10 @@ annotation helpers.
 
 * Three vignettes: OpenCL setup (**Chapter-01**), loading and assembling kernel
   programs (**Chapter-02**), and the kernel-runner / wrapper pattern
-  (**Chapter-03**), using **`glmbayes`** / envelope-gradient methodology as a
+  (**Chapter-03**), using `glmbayes` / envelope-gradient methodology as a
   reference application.
-* **`README`**: repositioned as library-agnostic; ecosystem table for
-  **`opencltools`**, **`nmathopencl`**, and **`glmbayes`**; structured
+* **`README`**: refocused as library-agnostic; ecosystem table for
+  `opencltools`, `nmathopencl`, and `glmbayes`; structured
   references including Nygren and Nygren (2006) and Stone et al. (2010).
 * **`inst/CITATION`**: package manual, JASA (2006), OpenCL survey, and
   **`glmbayes`** reference-application entry.
@@ -101,7 +101,7 @@ annotation helpers.
   tagging workflow, and library subsetting (OpenCL-heavy examples guarded with
   **`if (has_opencl())`** inside `\donttest{}`).
 
-## CRAN / optional OpenCL behaviour
+## CRAN / optional OpenCL behavior
 
 * **`configure`**: optional OpenCL at build time; CPU-only fallback when
   headers or runtime are absent.

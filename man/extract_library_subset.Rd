@@ -64,7 +64,7 @@ your kernel files, removing a runtime dependency on the full library.
 
 Bundled libraries such as \verb{inst/cl/nmath} ship
 \code{kernel_dependency_index.rds} next to their \code{.cl} shards.  Pass
-\code{index =} when you preload that object to avoid redundant reads; regenerate
+\code{index =} when you pass a pre-loaded index object to avoid redundant reads; regenerate
 the files with \link{write_kernel_dependency_index}, for example after porting via
 \verb{nmathtools/port_inst_cl_nmath_from_src.R} in the \code{openclport}
 package source tree.
