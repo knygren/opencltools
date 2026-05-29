@@ -1,8 +1,8 @@
 Package: opencltools
 Type: Package
 Title: 'OpenCL' Tools for R Package Developers
-Version: 0.8.0
-Date: 2026-05-24
+Version: 0.8.1
+Date: 2026-05-26
 Authors@R: c(
     person("Kjell", "Nygren", role = c("aut", "cre"),
            email = "kjell.a.nygren@gmail.com"),
@@ -41,6 +41,7 @@ RdMacros: Rdpack
 LinkingTo: Rcpp, RcppArmadillo, RcppParallel
 Depends: R (>= 3.5.0)
 Suggests:
+    glmbayes (>= 0.9.3),
     testthat (>= 3.0.0),
     spelling,
     knitr,

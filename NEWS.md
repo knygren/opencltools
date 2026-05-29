@@ -1,3 +1,8 @@
+# opencltools 0.8.1
+
+* CRAN resubmission: add **`glmbayes (>= 0.9.3)`** to `Suggests` as the reference
+  downstream application on CRAN.
+
 # opencltools 0.8.0
 
 First CRAN release. Version **0.8.0** (rather than 0.1.0) signals that the

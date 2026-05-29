@@ -1,8 +1,9 @@
-# CRAN submission comments — opencltools 0.8.0
+# CRAN submission comments — opencltools 0.8.1
 
 ## Summary
 
-This is the first submission of **opencltools** (0.8.0), a library-agnostic
+This is a resubmission of **opencltools** (0.8.1) addressing CRAN feedback on
+0.8.0. **opencltools** is a library-agnostic
 runtime toolkit for R package developers who ship optional OpenCL acceleration.
 The package probes hardware and drivers, loads and assembles annotated `.cl`
 kernel libraries, and provides diagnostics helpers. OpenCL is **optional** at

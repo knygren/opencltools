@@ -24,6 +24,21 @@ maximum \code{//@provides} symbols printed per algorithm-style shard
 \verb{//@provides}).
 Use \code{NA_integer_} or a negative value for no cap on algorithm shards.}
 }
+\value{
+Both S3 print methods are called for side effects. They write a structured
+summary to the console and invisibly return \code{x}.
+\describe{
+\item{\code{print.nmathopencl_concatenated_lib}}{
+\code{x} is a \code{character} with class \code{nmathopencl_concatenated_lib}
+(concatenated OpenCL sources from \code{\link{load_library_for_kernel}}).
+Printing lists requested/loaded library stems, kernel entry points,
+sampled \verb{//@provides} symbols, and concatenated byte size—not the full source.}
+\item{\code{print.nmathopencl_lib_extract_df}}{
+\code{x} is a \code{data.frame} with class \code{nmathopencl_lib_extract_df}
+(from \code{\link{extract_library_subset}}).
+Printing lists extraction/manifest rows and copy status per \code{stem.cl}.}
+}
+}
 \description{
 \link{load_library_for_kernel} returns a concatenated OpenCL-sources string
 with classes \verb{nmathopencl_concatenated_lib}, subclassing \code{character},
