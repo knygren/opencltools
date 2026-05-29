@@ -50,8 +50,6 @@ std::string load_kernel_library_wrapper(
 bool has_opencl();
 int get_opencl_core_count();
 
-#ifdef USE_OPENCL
-
 std::string load_kernel_source(
     const std::string& relative_path,
     const std::string& package = "opencltools"
@@ -63,6 +61,14 @@ std::string load_kernel_library(
     bool verbose = false
 );
 
+std::string load_library_for_kernel(
+    const std::string& kernel_relative_path,
+    const std::string& library_subdir,
+    const std::string& package,
+    const std::string& depends_tag);
+
+#ifdef USE_OPENCL
+
 struct OpenCLConfig {
   bool have_expm1;
   bool have_log1p;
@@ -71,12 +77,6 @@ struct OpenCLConfig {
 
 OpenCLConfig configureOpenCL(cl_context context,
                              cl_device_id device);
-
-std::string load_library_for_kernel(
-    const std::string& kernel_relative_path,
-    const std::string& library_subdir,
-    const std::string& package,
-    const std::string& depends_tag);
 
 #endif // USE_OPENCL
 

@@ -9,7 +9,15 @@
 #'   be written.
 #' @param overwrite Logical; remove and recreate `output_dir` if it exists.
 #'
-#' @return A list containing sorted and unresolved data frames.
+#' @return A named \code{list} with:
+#' \describe{
+#'   \item{\code{sorted}}{Data frame of files placed in dependency order
+#'     (\code{order}, \code{pass}, \code{file}, \code{source_type}, \code{depends}).}
+#'   \item{\code{unresolved}}{Data frame of files blocked by missing dependencies.}
+#'   \item{\code{sorted_dir}, \code{unresolved_dir}}{Output directory paths; CSV
+#'     reports \file{sorted_files.csv} and \file{unresolved_files.csv} are written
+#'     under \code{output_dir}.}
+#' }
 #'
 #' @example inst/examples/Ex_stage_kernel_dependency_sort.R
 #'

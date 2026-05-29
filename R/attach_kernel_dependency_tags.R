@@ -25,6 +25,8 @@
 #'     declaration signature, `define_alias`, and `all_depends` for the
 #'     definition file.}
 #' }
+#' An S3 class \code{"opencl_dependency_tags"} is attached for use with
+#' \code{\link[=print.opencl_dependency_tags]{print()}}.
 #'
 #' @example inst/examples/Ex_attach_kernel_dependency_tags.R
 #' @export
@@ -148,7 +150,12 @@ attach_kernel_dependency_tags <- function(library_dir, dry_run = FALSE) {
 #' @param max_rows Maximum printed rows per table section.
 #' @param ... Forwarded to \code{print.data.frame}.
 #'
-#' @return Invisibly returns `x`.
+#' @return Called for side effects. Prints tag tables (and optional
+#'   cycle/unresolved reports) from \code{\link{attach_kernel_dependency_tags}}.
+#'   Invisibly returns \code{x}, a \code{list} with S3 class
+#'   \code{"opencl_dependency_tags"} (same structure as
+#'   \code{attach_kernel_dependency_tags()}: \code{ok}, \code{message},
+#'   \code{sorted}, \code{unresolved}, \code{cycles}, \code{tags}, \ldots).
 #'
 #' @example inst/examples/Ex_attach_kernel_dependency_tags.R
 #' @export

@@ -22,15 +22,6 @@
 #'   }
 #' @param lib_dirs A list of OpenCL directories
 #' @param runtime_info The structured list returned by \code{detect_compute_runtimes()}.
-#' @return A structured list with diagnostics for each runtime, including:
-#'   \itemize{
-#'     \item installed: whether the runtime was detected
-#'     \item found_path_dirs: directories already present in PATH
-#'     \item missing_path_dirs: directories that should be added to PATH
-#'     \item found_lib_dirs: directories already present in LD_LIBRARY_PATH
-#'     \item missing_lib_dirs: directories that should be added to LD_LIBRARY_PATH
-#'     \item include_dirs: include directories detected for headers
-#'   }
 #' @section High-level diagnostic:
 #' \itemize{
 #'   \item \code{diagnose_glmbayes()} --- full GPU/OpenCL diagnostic report.
@@ -95,10 +86,66 @@
 #' use \code{\link{has_opencl}()} for a quick boolean when scripting.
 #'
 #' @return
-#' Most functions return structured lists describing detected hardware,
-#' drivers, runtimes, or environment issues. \code{diagnose_glmbayes()}
-#' prints a formatted report and invisibly returns a named list containing
-#' all intermediate diagnostic results.
+#' \describe{
+#'   \item{\code{diagnose_glmbayes()}}{
+#'     Called for side effects (prints a report). Invisibly returns a named
+#'     \code{list} with \code{environment_info}, \code{driver_status},
+#'     \code{runtime_status}, \code{env_diag}, \code{opencl_runtime_probe}
+#'     (logical or \code{NA}), and \code{opencl_enabled} (logical or \code{NA}).
+#'   }
+#'   \item{\code{detect_environment_and_gpus()}}{
+#'     Named \code{list}: \code{environment} (character: \code{windows},
+#'     \code{linux}, \code{wsl}, \code{msys2}, or \code{unknown}); \code{nvidia},
+#'     \code{amd}, and \code{intel} each a \code{list(present, names)}.
+#'   }
+#'   \item{\code{gpu_names()}}{
+#'     \code{character} GPU name(s) from \code{nvidia-smi} on Linux; on other
+#'     platforms a one-element informational character vector.
+#'   }
+#'   \item{\code{detect_or_install_gpu_drivers(info)}}{
+#'     \code{list(environment, drivers)} with per-vendor \code{installed},
+#'     \code{issues}, and \code{actions} character vectors.
+#'   }
+#'   \item{\code{detect_compute_runtimes(info)}}{
+#'     \code{list(environment, runtimes)} with nested CUDA/OpenCL path lists and
+#'     \code{headers_present}, \code{runtime_present}, and \code{installed}
+#'     flags per vendor.
+#'   }
+#'   \item{\code{check_runtime_env(runtime_info)}}{
+#'     \code{list(environment, diagnostics)} comparing detected bin/lib dirs to
+#'     current \code{PATH} and \code{LD_LIBRARY_PATH}: \code{found_path_dirs},
+#'     \code{missing_path_dirs}, \code{found_lib_dirs}, \code{missing_lib_dirs},
+#'     and \code{include_dirs} per vendor/runtime.
+#'   }
+#'   \item{\code{has_opencl()}}{
+#'     Logical scalar: \code{TRUE} if this \strong{build} of \pkg{opencltools}
+#'     was compiled with OpenCL (\code{USE_OPENCL}), not whether a GPU is usable.
+#'   }
+#'   \item{\code{opencl_device_info(force, details)}}{
+#'     \code{list} with \code{ok}, \code{reason}, platform/device indices and
+#'     name strings, \code{extension_cl_khr_fp64}, \code{probe_fp64_ok},
+#'     \code{selection_policy}; optional \code{candidates} if \code{details = TRUE}.
+#'     On CPU-only builds, \code{ok = FALSE} with reason
+#'     \code{"OpenCL not compiled in"}.
+#'   }
+#'   \item{\code{opencl_fp64_available(force)}}{
+#'     Logical scalar: \code{TRUE} if the cached device passes the
+#'     \code{cl_khr_fp64} extension and compile probe.
+#'   }
+#'   \item{\code{opencl_reset_device_selection()}}{
+#'     No return value, called for side effects (clears the device-selection
+#'     cache). Invisibly returns \code{NULL}.
+#'   }
+#'   \item{\code{verify_opencl_runtime(lib_dirs)}}{
+#'     Logical scalar: \code{TRUE} if a temporary program linked against
+#'     \code{libOpenCL} and \code{clGetPlatformIDs} succeeded;
+#'     \code{FALSE} if libraries or compile/run failed.
+#'   }
+#'   \item{\code{get_opencl_core_count()}}{
+#'     Integer scalar: total GPU compute units across platforms when OpenCL is
+#'     compiled in; \code{1} on CPU-only builds (stub).
+#'   }
+#' }
 #'
 #' @seealso
 #' \code{\link{diagnose_glmbayes}},
@@ -881,11 +928,6 @@ has_opencl <- function() {
 #' @param force If \code{TRUE}, rerun discovery even when a previous selection is cached.
 #' @param details If \code{TRUE}, include a \code{candidates} list describing every
 #'   platform/device pair (extension flag and probe result per device).
-#'
-#' @return \code{opencl_device_info} returns a list with \code{ok} (logical),
-#'   \code{reason} (character), indices, vendor/name strings, \code{device_type},
-#'   \code{extension_cl_khr_fp64}, \code{probe_fp64_ok}, \code{selection_policy},
-#'   and optionally \code{candidates}.
 #'
 #' @export
 #' @order 7

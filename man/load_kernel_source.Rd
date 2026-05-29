@@ -25,8 +25,20 @@ library.}
 resolution (default: \code{FALSE}).}
 }
 \value{
-A character string containing the kernel source code or combined
-kernel library.
+\describe{
+\item{\code{load_kernel_source()}}{
+Character scalar (length 1) with the contents of one \file{.cl} file (plain
+\code{character}, not an S3 class). Throws if the path is missing; returns
+\code{""} with a \code{message()} if no text was read. Does not require
+\code{\link{has_opencl}}.
+}
+\item{\code{load_kernel_library()}}{
+Character scalar: all shards in \code{subdir} concatenated in dependency
+order (plain \code{character}). Same empty-string \code{message()} behaviour.
+Use \code{verbose = TRUE} for dependency-sort diagnostics. For a subclass
+with stem metadata, see \code{\link{load_library_for_kernel}}.
+}
+}
 }
 \description{
 These functions provide a user-facing interface for loading OpenCL kernel
@@ -35,16 +47,14 @@ They call internal C++ routines that perform file lookup, dependency
 resolution, and concatenation of kernel sources.
 }
 \details{
-OpenCL support is optional. If the package was built without OpenCL
-(e.g., on systems lacking OpenCL headers or drivers), these functions
-return a clear error message.
-}
-\section{OpenCL Availability}{
+Reading and concatenating \file{.cl} files does not require a GPU or OpenCL
+runtime. These functions work on all builds of \pkg{opencltools}. Use
+\code{\link{has_opencl}} to see whether the package was compiled with
+OpenCL device/runtime support for downstream GPU execution.
 
-Use \code{\link{has_opencl}} to check whether OpenCL support is available
-in the current build of \pkg{glmbayes}.
+If no text could be read, an empty string is returned and a \code{message}
+is emitted.
 }
-
 \section{How These Functions Assemble an OpenCL Program}{
 
 
@@ -442,13 +452,11 @@ generally leads to clearer code and more maintainable OpenCL integrations.
 \examples{
 ############################### Start of load_kernel_source example ####################
 
-if (has_opencl()) {
-  src <- load_kernel_source("nmath/bd0.cl")
-  lib <- load_kernel_library("nmath")
-  nchar(src)
-  nchar(lib)
-  nchar(load_kernel_library("libR_shims"))
-}
+src <- load_kernel_source("nmath/bd0.cl")
+lib <- load_kernel_library("nmath")
+nchar(src)
+nchar(lib)
+nchar(load_kernel_library("libR_shims"))
 
 ###############################################################################
 ## End of load_kernel_source example

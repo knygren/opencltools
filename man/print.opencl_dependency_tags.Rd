@@ -14,7 +14,12 @@
 \item{...}{Forwarded to \code{print.data.frame}.}
 }
 \value{
-Invisibly returns \code{x}.
+Called for side effects. Prints tag tables (and optional
+cycle/unresolved reports) from \code{\link{attach_kernel_dependency_tags}}.
+Invisibly returns \code{x}, a \code{list} with S3 class
+\code{"opencl_dependency_tags"} (same structure as
+\code{attach_kernel_dependency_tags()}: \code{ok}, \code{message},
+\code{sorted}, \code{unresolved}, \code{cycles}, \code{tags}, \ldots).
 }
 \description{
 Print output from \link{attach_kernel_dependency_tags}.

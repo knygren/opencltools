@@ -5,13 +5,13 @@
 #' They call internal C++ routines that perform file lookup, dependency
 #' resolution, and concatenation of kernel sources.
 #'
-#' OpenCL support is optional. If the package was built without OpenCL
-#' (e.g., on systems lacking OpenCL headers or drivers), these functions
-#' return a clear error message.
+#' Reading and concatenating \file{.cl} files does not require a GPU or OpenCL
+#' runtime. These functions work on all builds of \pkg{opencltools}. Use
+#' \code{\link{has_opencl}} to see whether the package was compiled with
+#' OpenCL device/runtime support for downstream GPU execution.
 #'
-#' @section OpenCL Availability:
-#' Use \code{\link{has_opencl}} to check whether OpenCL support is available
-#' in the current build of \pkg{glmbayes}.
+#' If no text could be read, an empty string is returned and a \code{message}
+#' is emitted.
 #'
 #'
 #' @section How These Functions Assemble an OpenCL Program:
@@ -404,24 +404,41 @@
 #' @param verbose Logical; print diagnostic information during dependency
 #'   resolution (default: \code{FALSE}).
 #'
-#' @return A character string containing the kernel source code or combined
-#'   kernel library.
+#' @return
+#' \describe{
+#'   \item{\code{load_kernel_source()}}{
+#'     Character scalar (length 1) with the contents of one \file{.cl} file (plain
+#'     \code{character}, not an S3 class). Throws if the path is missing; returns
+#'     \code{""} with a \code{message()} if no text was read. Does not require
+#'     \code{\link{has_opencl}}.
+#'   }
+#'   \item{\code{load_kernel_library()}}{
+#'     Character scalar: all shards in \code{subdir} concatenated in dependency
+#'     order (plain \code{character}). Same empty-string \code{message()} behaviour.
+#'     Use \code{verbose = TRUE} for dependency-sort diagnostics. For a subclass
+#'     with stem metadata, see \code{\link{load_library_for_kernel}}.
+#'   }
+#' }
 #'
 #' @example inst/examples/Ex_load_kernel_source.R
 #'
 #' @export
 load_kernel_source <- function(relative_path, package = "opencltools") {
-  if (!has_opencl()) {
-    stop("OpenCL support is not available in this build of opencltools.")
-  }
-  .load_kernel_source_wrapper_cpp(relative_path, package)
+  out <- .load_kernel_source_wrapper_cpp(relative_path, package)
+  .message_if_empty_kernel_text(out, "kernel source")
 }
 
 #' @rdname load_kernel_source
 #' @export
 load_kernel_library <- function(subdir, package = "opencltools", verbose = FALSE) {
-  if (!has_opencl()) {
-    stop("OpenCL support is not available in this build of opencltools.")
+  out <- .load_kernel_library_wrapper_cpp(subdir, package, verbose)
+  .message_if_empty_kernel_text(out, "kernel library")
+}
+
+#' @noRd
+.message_if_empty_kernel_text <- function(out, what) {
+  if (!nzchar(out)) {
+    message("Returning empty ", what, " (no kernel text was read).")
   }
-  .load_kernel_library_wrapper_cpp(subdir, package, verbose)
+  out
 }

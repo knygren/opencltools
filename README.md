@@ -61,7 +61,7 @@ programs that consume it.
 | Package | Role |
 |---------|------|
 | **`opencltools`** | Runtime plumbing: device probing, kernel loading, library subsetting, program build helpers. Library-agnostic — works with any ported `.cl` library. |
-| **`nmathopencl`** | *Example ported library.* OpenCL-C ports of R's nmath (>130 statistical functions), distributed as installable `.cl` files with dependency annotations. The first of potentially many such libraries. Also ships parity-testing R wrappers (`dnorm_opencl`, `dgamma_opencl`, …). |
+| **`nmathopencl`** | *Example ported library.* OpenCL-C ports of R's nmath (>130 statistical functions), distributed as installable `.cl` files with dependency annotations. The first of potentially many such libraries. |
 | **`glmbayes`** | *Reference downstream package.* Bayesian GLM sampling with optional GPU acceleration of envelope gradient evaluation via `f2_f3_opencl`, using `nmathopencl` as its ported library and `opencltools` as the loader layer. |
 
 Any other ported C library can occupy the role that `nmathopencl` plays here.
@@ -81,7 +81,7 @@ environment:
 ```r
 library(opencltools)
 
-has_opencl()               # TRUE/FALSE — is an OpenCL ICD present?
+has_opencl()               # TRUE if this build was compiled with OpenCL
 opencl_fp64_available()    # Is double-precision (cl_khr_fp64) working?
 opencl_device_info()       # Cached device/driver metadata
 gpu_names()                # NVIDIA GPU names via nvidia-smi (Linux)
@@ -92,31 +92,42 @@ check_runtime_env()        # Workstation-level environment diagnosis
 detect_compute_runtimes()  # Enumerate CUDA, ROCm, OpenCL runtimes
 ```
 
-**Set up OpenCL before starting work.** Call `has_opencl()` and
-`opencl_fp64_available()` at the start of any session that will dispatch to a
-GPU. If either returns `FALSE`, diagnose with `verify_opencl_runtime()` or
-`detect_compute_runtimes()` before attempting to build or run kernels. Driver
-issues that are detected early are much easier to resolve than failures buried
-inside `clBuildProgram`.
+**Host-side checks** (`detect_environment_and_gpus()`, `gpu_names()`,
+`detect_compute_runtimes()`, `check_runtime_env()`) do not require OpenCL to
+be compiled into the package or present on the machine.
+
+**Before GPU dispatch**, call `has_opencl()` and `opencl_fp64_available()` at
+session start. `has_opencl()` is `TRUE` only when this **build** of
+`opencltools` was compiled with OpenCL support (`USE_OPENCL`), not merely when
+a GPU is attached. If either returns `FALSE`, diagnose with
+`verify_opencl_runtime()` or `detect_compute_runtimes()` before
+`clBuildProgram`. Driver issues caught early are easier to fix than failures
+buried inside kernel compilation.
 
 ### Kernel source loading (R and C++)
 
 Load individual `.cl` files or entire annotated subdirectories into strings
-that can be assembled into an OpenCL program source. The `package` argument
-points to whichever package ships the `.cl` files you want --- `nmathopencl`,
-your own package, or any other ported library installed on the system:
+ready for `clCreateProgramWithSource`. This step is **file I/O only** --- it
+does not call the OpenCL driver or GPU. It works on **every** build of
+`opencltools`, including CPU-only CRAN binaries. The `package` argument
+names whichever installed package ships the `.cl` tree (`opencltools`,
+`nmathopencl`, your own package, etc.):
 
 ```r
-# Load a single configuration header from any package
-src <- load_kernel_source("OPENCL.cl", package = "my_ported_lib")
+# Single shard (example from opencltools inst/cl)
+src <- load_kernel_source("nmath/bd0.cl", package = "opencltools")
 
-# Load an entire annotated subdirectory in dependency order
-lib_src <- load_kernel_library("mylib", package = "my_ported_lib")
+# Full annotated library in dependency order
+lib_src <- load_kernel_library("nmath", package = "opencltools")
 ```
 
+If no text could be read, the functions return `""` and emit a `message()`.
+Missing paths still raise an error. Use `has_opencl()` when you need to know
+whether this **binary** can run downstream GPU code, not to gate loading.
+
 The C++ equivalents (`openclPort::load_kernel_source`,
-`openclPort::load_kernel_library`) are also available for use inside your
-package's `.cpp` files via `LinkingTo: opencltools`.
+`openclPort::load_kernel_library`, `openclPort::load_library_for_kernel`) are
+available via `LinkingTo: opencltools`.
 
 ### Minimal library subsetting for a specific kernel
 
@@ -134,7 +145,12 @@ src <- load_library_for_kernel(
   kernel_path, lib_dir,
   depends_tag = "all_depends_mylib"
 )
+print(src)   # S3: nmathopencl_concatenated_lib (stems, size; not full source)
 ```
+
+Returns a `character` vector with class `nmathopencl_concatenated_lib` and
+attributes listing requested/loaded stems. `extract_library_subset()` yields
+`nmathopencl_lib_extract_df` for vendoring a copied subset.
 
 The C++ equivalent `openclPort::load_library_for_kernel(...)` is provided for
 use inside kernel runner code where calling back into R from C++ is
@@ -161,6 +177,37 @@ library:
 | `load_library_for_kernel()` | At runtime (or interactively), read `@all_depends_<tag>` from a kernel file and concatenate only the library shards it needs, in dependency order. Emits warnings for known-problematic stems. |
 | `extract_library_subset()` | Materialise a kernel-specific subset into a vendored directory (for packages that want to ship their own copy of the needed shards) |
 | `write_kernel_dependency_index()` | Regenerate `kernel_dependency_index.rds` / `.tsv` after updating a library tree |
+
+### Documentation
+
+Exported functions and S3 print methods document **return types and meaning** in
+help pages (`?load_kernel_source`, `?gpu_diagnostics`, `?kernel_lib_subset_printing`,
+etc.): list structure for diagnostics, plain `character` vs `nmathopencl_*` classes
+for loaders, and explicit **side-effect-only** wording for `print()` methods and
+`opencl_reset_device_selection()`.
+
+### Examples and `R CMD check`
+
+Package examples are written so **CRAN checks exercise real code** without
+requiring a GPU (see also the [CRAN cookbook on examples](https://contributor.r-project.org/cran-cookbook/general_issues.html#structuring-of-examples)):
+
+| Runs on every check | Stays in `\donttest{}` (slow full `nmath` only) |
+|---------------------|--------------------------------------------------|
+| Host diagnostics (`detect_*`, `check_runtime_env`) | Re-indexing all ~137 shards in `cl/nmath` |
+| `load_kernel_source()` / `load_kernel_library()` | Full-library demos in subset/tagging examples |
+| OpenCL probes in `gpu_diagnostics` (stubs on CPU-only builds) | |
+| Tagging, indexing, subsetting on `inst/cl/nmath_small/` | |
+
+Loaders and host checks do **not** use `if (has_opencl())` in examples. Optional
+OpenCL at compile time is probed with `has_opencl()` in **your** package before
+GPU dispatch, not before reading `.cl` files.
+
+Interactive demos of the full `nmath` library:
+
+```r
+example(load_library_for_kernel, run.dontest = TRUE)
+devtools::run_examples(run_donttest = TRUE)
+```
 
 ---
 
@@ -391,10 +438,13 @@ install.packages(
 )
 ```
 
-OpenCL support requires a GPU with an installed OpenCL runtime (NVIDIA CUDA,
-AMD ROCm/OpenCL, Intel OpenCL, or Apple Metal via OpenCL compatibility layer).
-The package installs and all non-GPU functions work without a GPU. All
-GPU-dispatching functions degrade gracefully when OpenCL is unavailable.
+The package **installs on CPU-only systems**. Reading and assembling `.cl`
+sources works without OpenCL headers at build time. Optional OpenCL at
+compile time enables `has_opencl() == TRUE`, device probes, and fp64 selection
+for packages that compile and run kernels on a GPU (NVIDIA, AMD, Intel, etc.).
+Downstream code should use a `use_opencl` flag (or equivalent) and probe
+`has_opencl()` / `opencl_fp64_available()` before dispatch, not before loading
+kernel text.
 
 ---
 
@@ -409,7 +459,7 @@ index, following the `Chapter-NN` convention used by `glmbayes`.
 | `Chapter-02` | ✓ | **Using a ported library** — Annotating kernels, assembling programs, subsetting a `.cl` library (`nmathopencl` as the worked example) |
 | `Chapter-03` | ✓ | **Kernel runners and wrappers** — The runner/wrapper pattern from `glmbayes`, graceful fallback |
 | `Chapter-00` | planned | **Introduction** — What opencltools is and when to use it |
-| `Chapter-04` | planned | **Testing and parity validation** — Using `nmathopencl`'s `*_opencl` wrappers to verify numerical accuracy before relying on device code |
+| `Chapter-04` | planned | **Testing and parity validation** — Verifying numerical accuracy of ported device code before production use |
 | `Chapter-A01` | planned | **Appendix: Kernel annotation in depth** — `attach_kernel_call_tags`, `attach_cross_library_tags`, dependency closure, `@depends` vs `@all_depends`, index format |
 | `Chapter-A02` | planned | **Appendix: Vendoring a library subset** — Using `extract_library_subset` and `write_kernel_dependency_index` to ship a minimal shard tree with your package |
 

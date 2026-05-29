@@ -7,7 +7,9 @@
 get_opencl_core_count()
 }
 \value{
-Integer count of compute units.
+Integer scalar: total GPU compute units across OpenCL platforms when
+this build has OpenCL support; \code{1} on CPU-only builds. See
+\code{\link{gpu_diagnostics}} for full return details.
 }
 \description{
 Returns the number of compute units (cores) available on the default
@@ -24,20 +26,15 @@ gpu_names()
 runtime <- detect_compute_runtimes(info)
 check_runtime_env(runtime)
 
-\donttest{
-## OpenCL device probes (package USE_OPENCL .cpp; skip when unavailable)
-if (has_opencl()) {
-  has_opencl()
-  opencl_fp64_available()
-  opencl_device_info()
-  get_opencl_core_count()
-  verify_opencl_runtime()
+## OpenCL device probes (stubs on CPU-only builds; real probes when USE_OPENCL)
+opencl_fp64_available()
+opencl_device_info()
+get_opencl_core_count()
+verify_opencl_runtime()
 
-  # Full diagnostic report (prints; returns list invisibly)
-  diag <- diagnose_glmbayes()
-  names(diag)
-}
-}
+# Full diagnostic report (prints; returns list invisibly)
+diag <- diagnose_glmbayes()
+names(diag)
 
 ###############################################################################
 ## End of gpu_diagnostics example

@@ -10,20 +10,36 @@ CRAN resubmission addressing reviewer feedback on **0.8.0**.
   side-effect printing with invisible return of `x`, and description of output
   classes.
 
+## Kernel loading (all builds)
+
+* **`load_kernel_source()`**, **`load_kernel_library()`**, and
+  **`load_library_for_kernel()`** C++ implementations are compiled on every
+  build (not only when **`USE_OPENCL`** is defined): reading and concatenating
+  **`.cl`** files is file I/O, not OpenCL API use.
+* Removed **`has_opencl()`** checks and **`stop()`** from the R wrappers; empty
+  reads return **`""`** with a **`message()`** instead of failing on CPU-only
+  binaries.
+* **`has_opencl()`** remains the signal for whether **this binary** can run
+  downstream GPU code; downstream packages should gate **dispatch**, not
+  loading kernel text.
+
 ## Examples (`R CMD check`)
 
-* Unwrap **`\donttest{}`** for examples that do not require OpenCL at run time
-  (tagging, indexing, path helpers, and library subsetting on a small tree).
+* Unwrap **`\donttest{}`** and remove **`if (has_opencl())`** from examples that
+  do not need a GPU at run time: **`load_kernel_source`**, **`gpu_diagnostics`**
+  (host block always; OpenCL probes use stubs on CPU-only builds), tagging and
+  indexing on **`nmath_small`**, path helpers, and fast subsetting blocks.
 * Add **`inst/cl/nmath_small/`**: **`ex_glmbayes_nmath`** shards plus six decoy
   stems from full **`nmath`** (`bessel`, `nmath2`, `qDiscrete_search`, `sunif`,
   `pcauchy`, `punif`) so subset examples exclude files present in the library
   directory but not named on the launcher kernel.
-* Examples that rebuild the full **`nmath`** index (**`load_library_for_kernel`**,
-  **`extract_library_subset`**, **`kernel_lib_subset_printing`**, and step 2 of
-  the tagging workflow) now run a **fast block** on **`nmath_small`** during the
-  check, with the full-library demo retained inside **`\donttest{}`**.
-* OpenCL-dependent examples (**`load_kernel_source`**, **`gpu_diagnostics`**) remain
-  in **`\donttest{}`** with **`if (has_opencl())`** guards where needed.
+* **`load_library_for_kernel`**, **`extract_library_subset`**,
+  **`kernel_lib_subset_printing`**, and step 2 of the tagging workflow run a
+  **fast block** on **`nmath_small`** during the check; only the slow
+  full-**`nmath`** index rebuild (~137 shards) stays inside **`\donttest{}`**.
+* No package example uses **`if (has_opencl())`**; use it in **downstream**
+  code before **`clBuildProgram`** / kernel dispatch, not before loading
+  **`.cl`** sources.
 
 ## Maintainer
 

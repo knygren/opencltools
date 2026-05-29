@@ -27,6 +27,8 @@ A list with:
 declaration signature, \code{define_alias}, and \code{all_depends} for the
 definition file.}
 }
+An S3 class \code{"opencl_dependency_tags"} is attached for use with
+\code{\link[=print.opencl_dependency_tags]{print()}}.
 }
 \description{
 Compute and attach derived tags to each \code{.cl} file in a library:
