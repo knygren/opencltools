@@ -172,6 +172,8 @@ diagnose_glmbayes <- function() {
   drivers  <- detect_or_install_gpu_drivers(info)
   runtimes <- detect_compute_runtimes(info)
   env_diag <- check_runtime_env(runtimes)
+  vendor_env_diag <- NULL
+  runtime_ok <- NA
   
   cat("Environment:", info$environment, "\n\n")
   
@@ -185,7 +187,7 @@ diagnose_glmbayes <- function() {
     cat("GPU:", toupper(gpu_vendor), "\n")
     drv  <- drivers$drivers[[gpu_vendor]]
     rt   <- runtimes$runtimes[[gpu_vendor]]
-    diag <- env_diag$diagnostics[[gpu_vendor]]
+    vendor_env_diag <- env_diag$diagnostics[[gpu_vendor]]
     
     # 1. Driver check
     if (drv$installed) {
@@ -220,18 +222,18 @@ diagnose_glmbayes <- function() {
     }
     
     # 3. PATH/lib environment validation
-    paths_ok <- (length(diag$opencl$missing_path_dirs) == 0 &&
-                   length(diag$opencl$missing_lib_dirs) == 0)
+    paths_ok <- (length(vendor_env_diag$opencl$missing_path_dirs) == 0 &&
+                   length(vendor_env_diag$opencl$missing_lib_dirs) == 0)
     
     if (paths_ok) {
       cat("  [OK] Required PATH and library dirs present\n")
     } else {
-      if (length(diag$opencl$missing_path_dirs) > 0)
+      if (length(vendor_env_diag$opencl$missing_path_dirs) > 0)
         cat("  [WARN] Missing PATH entries:",
-            paste(diag$opencl$missing_path_dirs, collapse=", "), "\n")
-      if (length(diag$opencl$missing_lib_dirs) > 0)
+            paste(vendor_env_diag$opencl$missing_path_dirs, collapse=", "), "\n")
+      if (length(vendor_env_diag$opencl$missing_lib_dirs) > 0)
         cat("  [WARN] Missing library dirs:",
-            paste(diag$opencl$missing_lib_dirs, collapse=", "), "\n")
+            paste(vendor_env_diag$opencl$missing_lib_dirs, collapse=", "), "\n")
     }
     
     # 4. Runtime probe (Linux/WSL only)
@@ -264,33 +266,35 @@ diagnose_glmbayes <- function() {
     }
   }
   
-  # Step 4: Interactive PATH/lib fixes
-  missing_items <- (length(diag$opencl$missing_path_dirs) > 0 ||
-                      length(diag$opencl$missing_lib_dirs) > 0)
-  
-  if (missing_items && !isTRUE(opencl_enabled)) {
-    cat("\n[INFO] Missing PATH/lib entries detected and OpenCL is not enabled.\n")
+  # Step 4: Interactive PATH/lib fixes (only when a GPU vendor was identified)
+  if (!is.null(vendor_env_diag) && !is.null(vendor_env_diag$opencl)) {
+    missing_items <- (length(vendor_env_diag$opencl$missing_path_dirs) > 0 ||
+                        length(vendor_env_diag$opencl$missing_lib_dirs) > 0)
     
-    if (length(diag$opencl$missing_path_dirs) > 0) {
-      cat("  Missing PATH entries:\n")
-      cat("   -", paste(diag$opencl$missing_path_dirs, collapse="\n   - "), "\n")
-      ans <- readline("Would you like to permanently add missing PATH dirs? [y/N]: ")
-      if (tolower(ans) == "y") {
-        if (tolower(info$environment) == "windows") {
-          add_to_path_windows(diag$opencl$missing_path_dirs)
-        } else {
-          add_to_path_linux(diag$opencl$missing_path_dirs)
+    if (missing_items && !isTRUE(opencl_enabled) && interactive()) {
+      cat("\n[INFO] Missing PATH/lib entries detected and OpenCL is not enabled.\n")
+      
+      if (length(vendor_env_diag$opencl$missing_path_dirs) > 0) {
+        cat("  Missing PATH entries:\n")
+        cat("   -", paste(vendor_env_diag$opencl$missing_path_dirs, collapse="\n   - "), "\n")
+        ans <- readline("Would you like to permanently add missing PATH dirs? [y/N]: ")
+        if (tolower(ans) == "y") {
+          if (tolower(info$environment) == "windows") {
+            add_to_path_windows(vendor_env_diag$opencl$missing_path_dirs)
+          } else {
+            add_to_path_linux(vendor_env_diag$opencl$missing_path_dirs)
+          }
         }
       }
-    }
-    
-    if (length(diag$opencl$missing_lib_dirs) > 0 &&
-        tolower(info$environment) %in% c("linux", "wsl")) {
-      cat("  Missing library dirs:\n")
-      cat("   -", paste(diag$opencl$missing_lib_dirs, collapse="\n   - "), "\n")
-      ans_lib <- readline("Would you like to permanently add missing library dirs to LD_LIBRARY_PATH? [y/N]: ")
-      if (tolower(ans_lib) == "y") {
-        add_to_libpath_linux(diag$opencl$missing_lib_dirs)
+      
+      if (length(vendor_env_diag$opencl$missing_lib_dirs) > 0 &&
+          tolower(info$environment) %in% c("linux", "wsl")) {
+        cat("  Missing library dirs:\n")
+        cat("   -", paste(vendor_env_diag$opencl$missing_lib_dirs, collapse="\n   - "), "\n")
+        ans_lib <- readline("Would you like to permanently add missing library dirs to LD_LIBRARY_PATH? [y/N]: ")
+        if (tolower(ans_lib) == "y") {
+          add_to_libpath_linux(vendor_env_diag$opencl$missing_lib_dirs)
+        }
       }
     }
   }

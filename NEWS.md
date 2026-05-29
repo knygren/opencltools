@@ -41,6 +41,12 @@ CRAN resubmission addressing reviewer feedback on **0.8.0**.
   code before **`clBuildProgram`** / kernel dispatch, not before loading
   **`.cl`** sources.
 
+## Bug fixes
+
+* **`diagnose_glmbayes()`** no longer errors on headless CI when no GPU vendor is
+  detected (avoided accidental use of base **`diag`**; PATH prompts only in
+  **`interactive()`** sessions).
+
 ## Headers (`LinkingTo`)
 
 * Remove incomplete bundled **`inst/include/CL/`** (`cl.h` without **`cl_version.h`**).
