@@ -1,7 +1,33 @@
 # opencltools 0.8.1
 
-* CRAN resubmission: add **`glmbayes (>= 0.9.3)`** to `Suggests` as the reference
-  downstream application on CRAN.
+CRAN resubmission addressing reviewer feedback on **0.8.0**.
+
+## CRAN / packaging
+
+* Add **`glmbayes (>= 0.9.3)`** to **`Suggests`** (reference downstream application on CRAN).
+* Add **`\value`** documentation for **`kernel_lib_subset_printing`** S3 methods
+  (`print.nmathopencl_concatenated_lib`, `print.nmathopencl_lib_extract_df`):
+  side-effect printing with invisible return of `x`, and description of output
+  classes.
+
+## Examples (`R CMD check`)
+
+* Unwrap **`\donttest{}`** for examples that do not require OpenCL at run time
+  (tagging, indexing, path helpers, and library subsetting on a small tree).
+* Add **`inst/cl/nmath_small/`**: **`ex_glmbayes_nmath`** shards plus six decoy
+  stems from full **`nmath`** (`bessel`, `nmath2`, `qDiscrete_search`, `sunif`,
+  `pcauchy`, `punif`) so subset examples exclude files present in the library
+  directory but not named on the launcher kernel.
+* Examples that rebuild the full **`nmath`** index (**`load_library_for_kernel`**,
+  **`extract_library_subset`**, **`kernel_lib_subset_printing`**, and step 2 of
+  the tagging workflow) now run a **fast block** on **`nmath_small`** during the
+  check, with the full-library demo retained inside **`\donttest{}`**.
+* OpenCL-dependent examples (**`load_kernel_source`**, **`gpu_diagnostics`**) remain
+  in **`\donttest{}`** with **`if (has_opencl())`** guards where needed.
+
+## Maintainer
+
+* **`CRAN-SUBMISSION`** added to **`.gitignore`** (local `devtools::submit_cran()` log).
 
 # opencltools 0.8.0
 
