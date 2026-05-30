@@ -33,3 +33,7 @@ opencl_reset_device_selection_cpp_export <- function() {
     invisible(.Call(`_opencltools_opencl_reset_device_selection_cpp_export`))
 }
 
+register_opencltools_ccallables_cpp_export <- function() {
+    invisible(.Call(`_opencltools_register_opencltools_ccallables_cpp_export`))
+}
+

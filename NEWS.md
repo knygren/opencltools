@@ -52,6 +52,8 @@ CRAN resubmission addressing reviewer feedback on **0.8.0**.
 * Remove incomplete bundled **`inst/include/CL/`** (`cl.h` without **`cl_version.h`**).
   **`LinkingTo: opencltools`** supplies **`opencltools/openclPort.h`** only; each
   package locates **`CL/cl.h`** via its own **`configure`** / OpenCL SDK.
+* New **`opencltoolsLdFlags()`** export: **`PKG_LIBS`** fragment (`-L... -lopencltools`)
+  for downstream packages linking against **`openclPort::`** symbols.
 
 ## Maintainer
 

@@ -17,6 +17,12 @@ Each package must locate an OpenCL SDK or ICD headers via its own **`configure`*
 When **`USE_OPENCL`** is defined, `openclPort.h` includes `<CL/cl.h>` from those
 system/SDK paths. Do not rely on a bundled copy from this package.
 
+## Linking (`openclPort::` symbols)
+
+Headers alone are not enough: implementations live in the **opencltools**
+shared library. Downstream `src/Makevars` should include linker flags from
+`opencltools::opencltoolsLdFlags()` (see `?opencltoolsLdFlags`).
+
 ## Sync
 
 Keep `opencltools/openclPort.h` in sync with `src/openclPort.h` in the source tree.
