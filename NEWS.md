@@ -51,6 +51,10 @@ CRAN resubmission addressing reviewer feedback on **0.8.0**.
 
 ## Bug fixes
 
+* **`gpu_diagnostics` / `get_opencl_core_count` examples** — On CRAN builders with
+  OpenCL enabled, skip slow device enumeration unless **`NOT_CRAN=true`** (avoids
+  **>5s elapsed** example NOTE); CPU-only builds still run full stub path.
+
 * **`diagnose_glmbayes()`** no longer errors on headless CI when no GPU vendor is
   detected (avoided accidental use of base **`diag`**; PATH prompts only in
   **`interactive()`** sessions).

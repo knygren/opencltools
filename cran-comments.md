@@ -17,8 +17,10 @@ they were largely inside **`\donttest{}`**). Details below and in **NEWS.md**.
    **`if (has_opencl())`** where no GPU is needed at example time:
    * Host diagnostics; **`load_kernel_source()`** / **`load_kernel_library()`**
      (file I/O only, all builds).
-   * **`gpu_diagnostics`** (host block always; OpenCL probes stub on CPU-only
-     builds).
+   * **`gpu_diagnostics`** (host block always; on CRAN builders with OpenCL
+     compiled in, device enumeration is skipped unless **`NOT_CRAN=true`** to
+     avoid **>5s elapsed** example NOTE — same idea as **`skip_on_cran()`** in
+     tests).
    * Tagging, indexing, subsetting on **`inst/cl/nmath_small/`**.
    * Only the slow full-**`nmath`** index rebuild (~137 shards) stays in
      **`\donttest{}`** (runtime, not OpenCL).

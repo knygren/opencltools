@@ -1100,6 +1100,3 @@ check_runtime_env <- function(runtime_info) {
   
   return(results)
 }
-
-
-
