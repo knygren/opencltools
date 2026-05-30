@@ -1,0 +1,137 @@
+#!/bin/sh
+# configure.win -- OpenCL detection for R packages (Windows / Rtools)
+#
+# Template provided by opencltools::use_opencl_configure().
+# See ?opencltools::use_opencl_configure for usage guidance.
+#
+# This script scans the Windows MACHINE-level PATH and known SDK locations
+# for CL/cl.h and generates src/Makevars.win dynamically.  It ALWAYS
+# succeeds: when no SDK is found the package builds cleanly as CPU-only.
+# This is what makes the package CRAN-safe -- 'CRAN' Windows build machines
+# have no OpenCL SDK, yet the build succeeds and produces a valid binary.
+#
+# Outcome A -- CL/cl.h found:
+#   PKG_CXXFLAGS = -DUSE_OPENCL -I"<sdk>/include"
+#   PKG_LIBS     = -L"<sdk>/lib/x64" -lOpenCL $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+#
+# Outcome B -- CL/cl.h not found:
+#   PKG_CXXFLAGS =
+#   PKG_LIBS     = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+#
+# Guard all OpenCL C++ code with:
+#   #ifdef USE_OPENCL
+#   ...your OpenCL code...
+#   #endif
+#
+# In R, expose the compile-time flag via a thin .Call() wrapper:
+#   has_opencl <- function() .Call("_mypkg_has_opencl_cpp")
+# See opencltools::has_opencl for the reference implementation.
+#
+# Environment variables (optional):
+#   OPENCL_HOME  -- root of a custom OpenCL SDK (checked before system paths)
+#   OPENCL_SDK   -- alias for OPENCL_HOME
+#
+# Note: no runtime probe is performed on Windows.  The presence of CL/cl.h
+# is treated as sufficient evidence that an SDK is installed.  The runtime
+# ICD (OpenCL.dll) is normally installed with the GPU driver.
+
+echo "configure.win: starting OpenCL detection"
+
+# ---- 1. Load Windows MACHINE PATH via PowerShell ----------------------------
+# The msys2/bash PATH seen by Rtools may differ from the MACHINE-level PATH
+# where SDKs (CUDA, Intel, AMD) register their bin directories.
+# PowerShell reads the registry-backed MACHINE PATH reliably.
+if command -v powershell.exe >/dev/null 2>&1; then
+  echo "configure.win: reading MACHINE Path via PowerShell"
+  IFS=';' read -ra SYSTEM_PATHS <<< "$(
+    powershell.exe -NoProfile -Command \
+      "[System.Environment]::GetEnvironmentVariable('Path','Machine')"
+  )"
+else
+  echo "configure.win: PowerShell not found -- falling back to current PATH"
+  IFS=':' read -ra SYSTEM_PATHS <<< "${PATH}"
+fi
+
+SEARCH_PATHS=("${SYSTEM_PATHS[@]}")
+
+# ---- 2. User-specified SDK root (OPENCL_HOME / OPENCL_SDK) ------------------
+for var in OPENCL_HOME OPENCL_SDK; do
+  val="${!var}"
+  if [ -n "${val}" ]; then
+    echo "configure.win: ${var}=${val}"
+    for sub in "" "/include" "/include/CL"; do
+      p="${val}${sub}"
+      [ -d "${p}" ] && SEARCH_PATHS+=("${p}")
+    done
+  fi
+done
+
+# ---- 3. Scan known SDK installation roots -----------------------------------
+# Covers NVIDIA CUDA Toolkit, Intel OpenCL SDK, AMD APP SDK, Intel oneAPI.
+declare -A SDK_ROOTS=(
+  ["C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA"]="NVIDIA CUDA Toolkit"
+  ["C:/Program Files (x86)/IntelSWTools/OpenCL SDK"]="Intel OpenCL SDK"
+  ["C:/Program Files (x86)/AMD APP SDK"]="AMD APP SDK"
+  ["C:/Program Files (x86)/Intel/oneAPI"]="Intel oneAPI Toolkit"
+)
+
+for root in "${!SDK_ROOTS[@]}"; do
+  if [ -d "${root}" ]; then
+    echo "configure.win: found ${SDK_ROOTS[$root]} at ${root}"
+    SEARCH_PATHS+=("${root}" "${root}/include" "${root}/include/CL")
+  fi
+done
+
+# ---- 4. Scan CUDA versioned subdirectories ----------------------------------
+# CUDA installs versioned directories (v11.8, v12.2, ...) each with their own
+# OpenCL headers.  Scanning all of them picks up whichever is installed.
+CUDA_ROOT="C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA"
+if [ -d "${CUDA_ROOT}" ]; then
+  for subdir in "${CUDA_ROOT}"/v*; do
+    if [ -d "${subdir}/include/CL" ]; then
+      echo "configure.win: found CUDA subdir ${subdir}"
+      SEARCH_PATHS+=("${subdir}/include" "${subdir}/include/CL")
+    fi
+  done
+fi
+
+# ---- 5. Search for CL\cl.h --------------------------------------------------
+CL_HEADER=""
+for dir in "${SEARCH_PATHS[@]}"; do
+  if [ -f "${dir}\CL\cl.h" ]; then
+    CL_HEADER="${dir}\CL\cl.h"
+    echo "configure.win: found ${CL_HEADER}"
+    break
+  fi
+done
+
+if [ -z "${CL_HEADER}" ]; then
+  echo "configure.win: CL/cl.h not found -- will build CPU-only"
+fi
+
+# ---- 6. Write src/Makevars.win ----------------------------------------------
+if [ -n "${CL_HEADER}" ]; then
+  CL_BASE=$(dirname "${CL_HEADER}")
+  # Derive the SDK root from the header path and normalise separators.
+  OPENCL_HOME_NORM=$(echo "${CL_BASE}" \
+    | sed 's:[/\\]include[/\\]CL$::' \
+    | sed 's:\\:/:g')
+
+  INCLUDE_FLAG="-I\"${OPENCL_HOME_NORM}/include\""
+  LIB_FLAG="-L\"${OPENCL_HOME_NORM}/lib/x64\""
+
+  echo "configure.win: writing OpenCL-enabled src/Makevars.win"
+  cat > src/Makevars.win << EOF
+PKG_CXXFLAGS = -DUSE_OPENCL ${INCLUDE_FLAG}
+PKG_LIBS     = ${LIB_FLAG} -lOpenCL \$(LAPACK_LIBS) \$(BLAS_LIBS) \$(FLIBS)
+EOF
+
+else
+  echo "configure.win: writing CPU-only src/Makevars.win"
+  cat > src/Makevars.win << 'EOF'
+PKG_CXXFLAGS =
+PKG_LIBS     = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+EOF
+fi
+
+echo "configure.win: done"

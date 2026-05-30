@@ -20,8 +20,7 @@
 #' @return A character scalar of linker flags (\code{-L... -lopencltools}).
 #' @export
 #'
-#' @examples
-#' opencltoolsLdFlags()
+#' @example inst/examples/Ex_opencltools_ldflags.R
 opencltoolsLdFlags <- function() {
   root <- Sys.getenv("R_PACKAGE_DIR", unset = "")
   if (!nzchar(root)) {

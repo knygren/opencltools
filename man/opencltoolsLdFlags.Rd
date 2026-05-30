@@ -29,5 +29,13 @@ On Windows, add the same \code{OPENCLTOOLS_LIBS} line to \file{src/Makevars.win}
 (or merge into the \file{Makevars} block written by \file{configure.win}).
 }
 \examples{
-opencltoolsLdFlags()
+############################ Start of opencltoolsLdFlags example ########################
+
+flags <- opencltoolsLdFlags()
+flags
+grepl("-lopencltools", flags)
+
+###############################################################################
+## End of opencltoolsLdFlags example
+###############################################################################
 }

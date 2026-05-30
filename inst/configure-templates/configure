@@ -1,0 +1,174 @@
+#!/bin/sh
+# configure -- OpenCL detection for R packages (Linux / macOS)
+#
+# Template provided by opencltools::use_opencl_configure().
+# See ?opencltools::use_opencl_configure for usage guidance.
+#
+# This script detects OpenCL headers and libraries at compile time and
+# generates src/Makevars dynamically.  It ALWAYS succeeds: when OpenCL is
+# absent the package builds cleanly as CPU-only.  This is what makes the
+# package CRAN-safe -- the CRAN build machines have no OpenCL SDK, yet the
+# build succeeds and produces a valid (CPU-only) binary.
+#
+# Outcome A -- OpenCL headers, library, AND runtime platform all found:
+#   PKG_CXXFLAGS = -DUSE_OPENCL -I"<sdk>/include"
+#   PKG_LIBS     = -L"<sdk>/lib" -lOpenCL $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+#
+# Outcome B -- SDK absent, headers missing, or runtime probe fails:
+#   PKG_CXXFLAGS =
+#   PKG_LIBS     = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+#
+# Guard all OpenCL C++ code with:
+#   #ifdef USE_OPENCL
+#   ...your OpenCL code...
+#   #endif
+#
+# In R, expose the compile-time flag via a thin .Call() wrapper:
+#   has_opencl <- function() .Call("_mypkg_has_opencl_cpp")
+# See opencltools::has_opencl for the reference implementation.
+#
+# Environment variables (optional):
+#   OPENCL_HOME  -- root of a custom OpenCL SDK (searched before system paths)
+#   OPENCL_SDK   -- alias for OPENCL_HOME
+
+echo "configure: starting OpenCL detection"
+
+# ---- 1. Resolve Rscript ------------------------------------------------------
+# R CMD INSTALL normally sets R_HOME.  Derive from PATH as a fallback.
+if [ -n "${R_HOME}" ] && [ -x "${R_HOME}/bin/Rscript" ]; then
+  RSCRIPT="${R_HOME}/bin/Rscript"
+else
+  RSCRIPT=$(command -v Rscript 2>/dev/null || true)
+fi
+
+if [ -z "${RSCRIPT}" ]; then
+  echo "configure: cannot locate Rscript -- set R_HOME" >&2
+  exit 1
+fi
+
+echo "configure: Rscript = ${RSCRIPT}"
+
+# ---- 2. Collect system include directories -----------------------------------
+echo "configure: collecting system include dirs from gcc..."
+SYSTEM_INCLUDE_DIRS=$(echo | gcc -E -x c++ - -v 2>&1 | grep "^ /" | sed 's/^ //')
+
+# ---- 3. Build candidate include search list ----------------------------------
+# Start from system dirs, then prepend any user-specified SDK root.
+CANDIDATE_INCLUDES="${SYSTEM_INCLUDE_DIRS}"
+
+for var in OPENCL_HOME OPENCL_SDK; do
+  val=$(printenv "${var}" 2>/dev/null || true)
+  if [ -n "${val}" ]; then
+    echo "configure: ${var}=${val}"
+    CANDIDATE_INCLUDES="${val}/include
+${val}
+${CANDIDATE_INCLUDES}"
+  fi
+done
+
+# ---- 4. Search for CL/cl.h ---------------------------------------------------
+OPENCL_INCLUDE=""
+OPENCL_INCLUDE_FOUND=no
+
+for dir in ${CANDIDATE_INCLUDES}; do
+  if [ -f "${dir}/CL/cl.h" ]; then
+    OPENCL_INCLUDE="-I${dir}"
+    OPENCL_INCLUDE_FOUND=yes
+    echo "configure: found CL/cl.h in ${dir}"
+    break
+  fi
+done
+
+if [ "${OPENCL_INCLUDE_FOUND}" = "no" ]; then
+  echo "configure: CL/cl.h not found -- will build CPU-only"
+fi
+
+# ---- 5. Collect system library directories -----------------------------------
+echo "configure: collecting system lib dirs from gcc linker..."
+RAW_LIB_DIRS=$(gcc -Xlinker --verbose 2>&1 \
+  | grep SEARCH_DIR \
+  | sed 's/SEARCH_DIR("=*\([^"]*\)").*/\1/')
+ALT_LIB_DIRS=$(echo "${RAW_LIB_DIRS}" | sed 's|/usr/local|/usr|g')
+SYSTEM_LIB_DIRS=$(printf '%s\n%s' "${RAW_LIB_DIRS}" "${ALT_LIB_DIRS}" | sort -u)
+
+# ---- 6. Search for libOpenCL -------------------------------------------------
+OPENCL_LIB=""
+OPENCL_LIBDIR=""
+OPENCL_LIB_FOUND=no
+
+for dir in ${SYSTEM_LIB_DIRS}; do
+  if ls "${dir}"/libOpenCL.so* >/dev/null 2>&1; then
+    OPENCL_LIB="-L${dir} -lOpenCL"
+    OPENCL_LIBDIR="${dir}"
+    OPENCL_LIB_FOUND=yes
+    echo "configure: found libOpenCL in ${dir}"
+    break
+  fi
+done
+
+if [ "${OPENCL_LIB_FOUND}" = "no" ]; then
+  echo "configure: libOpenCL not found -- will build CPU-only"
+fi
+
+# ---- 7. Runtime probe --------------------------------------------------------
+# Even if headers and the library are found, USE_OPENCL is only set if at
+# least one OpenCL platform is visible at configure time.  This catches the
+# common failure mode where the ICD loader (libOpenCL.so) is installed but
+# no vendor runtime registers a platform in /etc/OpenCL/vendors/.
+OPENCL_RUNTIME_FOUND=no
+
+if [ "${OPENCL_INCLUDE_FOUND}" = "yes" ] && [ "${OPENCL_LIB_FOUND}" = "yes" ]; then
+  echo "configure: probing for a live OpenCL platform..."
+
+  CONFTEST_C="conftest_opencl_detect.c"
+  CONFTEST_BIN="conftest_opencl_detect"
+
+  cat > "${CONFTEST_C}" << 'CONFTEST_EOF'
+#include <CL/cl.h>
+int main(void) {
+    cl_uint n = 0;
+    cl_int  s = clGetPlatformIDs(0, NULL, &n);
+    return (s == CL_SUCCESS && n > 0) ? 0 : 1;
+}
+CONFTEST_EOF
+
+  if ${CC:-gcc} "${CONFTEST_C}" ${OPENCL_LIB} -o "${CONFTEST_BIN}" >/dev/null 2>&1; then
+    if env LD_LIBRARY_PATH="${OPENCL_LIBDIR}:${LD_LIBRARY_PATH}" \
+         "./${CONFTEST_BIN}" >/dev/null 2>&1; then
+      OPENCL_RUNTIME_FOUND=yes
+      echo "configure: runtime probe succeeded -- USE_OPENCL will be set"
+    else
+      echo "configure: runtime probe failed (no platform registered) -- building CPU-only"
+      echo "configure: check /etc/OpenCL/vendors/ for a vendor .icd file"
+    fi
+  else
+    echo "configure: conftest compile failed -- building CPU-only"
+  fi
+
+  rm -f "${CONFTEST_C}" "${CONFTEST_BIN}"
+fi
+
+echo "configure: OPENCL_INCLUDE_FOUND = ${OPENCL_INCLUDE_FOUND}"
+echo "configure: OPENCL_LIB_FOUND     = ${OPENCL_LIB_FOUND}"
+echo "configure: OPENCL_RUNTIME_FOUND = ${OPENCL_RUNTIME_FOUND}"
+
+# ---- 8. Write src/Makevars ---------------------------------------------------
+if [ "${OPENCL_INCLUDE_FOUND}" = "yes" ] && \
+   [ "${OPENCL_LIB_FOUND}"     = "yes" ] && \
+   [ "${OPENCL_RUNTIME_FOUND}" = "yes" ]; then
+
+  echo "configure: writing OpenCL-enabled src/Makevars"
+  cat > src/Makevars << EOF
+PKG_CXXFLAGS = -DUSE_OPENCL ${OPENCL_INCLUDE}
+PKG_LIBS     = ${OPENCL_LIB} \$(LAPACK_LIBS) \$(BLAS_LIBS) \$(FLIBS)
+EOF
+
+else
+  echo "configure: writing CPU-only src/Makevars"
+  cat > src/Makevars << 'EOF'
+PKG_CXXFLAGS =
+PKG_LIBS     = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+EOF
+fi
+
+echo "configure: done"

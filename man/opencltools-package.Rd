@@ -21,6 +21,9 @@ Typical workflow for a library author:
 \code{\link{extract_library_subset}} to assemble minimal subsets.
 \item Probe the workstation with \code{\link{has_opencl}},
 \code{\link{verify_opencl_runtime}}, and \code{\link{diagnose_glmbayes}}.
+\item For a new downstream package, call \code{\link{use_opencl_configure}}
+or \code{\link{port_to_opencl_configure}} to install CRAN-safe configure
+scripts.
 }
 }
 \section{Citation}{

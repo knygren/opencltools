@@ -2,6 +2,14 @@
 
 CRAN resubmission addressing reviewer feedback on **0.8.0**.
 
+## Configure-script tooling
+
+* Add **`inst/configure-templates/`** (`configure`, `configure.win`, README) and
+  exports **`use_opencl_configure()`**, **`port_to_opencl_configure()`** for
+  CRAN-safe optional OpenCL builds in downstream packages.
+* **`nmathopencl`** re-exports both helpers; templates resolve from the
+  **opencltools** installation.
+
 ## CRAN / packaging
 
 * Add **`glmbayes (>= 0.9.3)`** to **`Suggests`** (reference downstream application on CRAN).
