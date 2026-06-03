@@ -28,7 +28,7 @@ c(
     title    = "Likelihood Subgradient Densities",
     author   = c(
       person("Kjell N.", "Nygren"),
-      person("Lance M.", "Nygren")
+      person("Lan M.", "Nygren")
     ),
     journal  = "Journal of the American Statistical Association",
     volume   = "101",
