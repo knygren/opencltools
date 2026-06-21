@@ -1,3 +1,13 @@
+# opencltools 0.8.1.9000
+
+## Development version
+
+Unreleased changes after CRAN **0.8.1**.
+
+* **`nmathopencl`** and **`glmbayes`** on CRAN now link against **`opencltools`**
+  (`LinkingTo` / runtime integration); development continues on git and
+  R-universe at this version.
+
 # opencltools 0.8.1
 
 CRAN resubmission addressing reviewer feedback on **0.8.0**.

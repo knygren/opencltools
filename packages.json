@@ -1,8 +1,7 @@
 {
   "glmbayes": "knygren/glmbayes",
+  "nmathopencl": "knygren/nmathopencl",
   "opencltools": "knygren/opencltools",
-  "nmathopencl": "knygren/nmathopencl"
+  "glmbayesCore": "knygren/glmbayesCore"
 }
-
-
 

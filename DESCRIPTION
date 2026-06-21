@@ -1,8 +1,8 @@
 Package: opencltools
 Type: Package
 Title: 'OpenCL' Tools for R Package Developers
-Version: 0.8.1
-Date: 2026-05-26
+Version: 0.8.1.9000
+Date: 2026-06-21
 Authors@R: c(
     person("Kjell", "Nygren", role = c("aut", "cre"),
            email = "kjell.a.nygren@gmail.com"),
