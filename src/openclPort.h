@@ -48,6 +48,18 @@ std::string load_kernel_library_wrapper(
     bool verbose = false
 );
 
+std::string load_program_preload_wrapper(
+    std::string manifest_relative_path,
+    std::string source_package,
+    bool verbose = false);
+
+std::string load_library_for_kernel_cross_package_wrapper(
+    std::string kernel_relative_path,
+    std::string kernel_package,
+    std::string library_subdir,
+    std::string library_package,
+    std::string depends_tag);
+
 bool has_opencl();
 int get_opencl_core_count();
 

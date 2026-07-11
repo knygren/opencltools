@@ -9,6 +9,18 @@ load_kernel_library_wrapper_cpp_export <- function(subdir, package = "opencltool
     .Call(`_opencltools_load_kernel_library_wrapper_cpp_export`, subdir, package, verbose)
 }
 
+load_program_preload_wrapper_cpp_export <- function(manifest_relative_path, source_package, verbose = FALSE) {
+    .Call(`_opencltools_load_program_preload_wrapper_cpp_export`, manifest_relative_path, source_package, verbose)
+}
+
+load_library_for_kernel_cross_package_wrapper_cpp_export <- function(kernel_relative_path, kernel_package, library_subdir, library_package, depends_tag) {
+    .Call(`_opencltools_load_library_for_kernel_cross_package_wrapper_cpp_export`, kernel_relative_path, kernel_package, library_subdir, library_package, depends_tag)
+}
+
+read_program_preload_manifest_cpp_export <- function(manifest_relative_path, source_package) {
+    .Call(`_opencltools_read_program_preload_manifest_cpp_export`, manifest_relative_path, source_package)
+}
+
 has_opencl_cpp_export <- function() {
     .Call(`_opencltools_has_opencl_cpp_export`)
 }

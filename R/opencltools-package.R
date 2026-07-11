@@ -52,5 +52,6 @@
 #' @importFrom Rcpp evalCpp
 #' @importFrom Rdpack reprompt
 #' @importFrom RcppParallel RcppParallelLibs
+#' @importFrom utils read.delim
 #' @useDynLib opencltools, .registration = TRUE
 "_PACKAGE"

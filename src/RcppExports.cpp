@@ -36,6 +36,46 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// load_program_preload_wrapper_cpp_export
+std::string load_program_preload_wrapper_cpp_export(const std::string& manifest_relative_path, const std::string& source_package, bool verbose);
+RcppExport SEXP _opencltools_load_program_preload_wrapper_cpp_export(SEXP manifest_relative_pathSEXP, SEXP source_packageSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type manifest_relative_path(manifest_relative_pathSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type source_package(source_packageSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(load_program_preload_wrapper_cpp_export(manifest_relative_path, source_package, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// load_library_for_kernel_cross_package_wrapper_cpp_export
+std::string load_library_for_kernel_cross_package_wrapper_cpp_export(const std::string& kernel_relative_path, const std::string& kernel_package, const std::string& library_subdir, const std::string& library_package, const std::string& depends_tag);
+RcppExport SEXP _opencltools_load_library_for_kernel_cross_package_wrapper_cpp_export(SEXP kernel_relative_pathSEXP, SEXP kernel_packageSEXP, SEXP library_subdirSEXP, SEXP library_packageSEXP, SEXP depends_tagSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type kernel_relative_path(kernel_relative_pathSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type kernel_package(kernel_packageSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type library_subdir(library_subdirSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type library_package(library_packageSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type depends_tag(depends_tagSEXP);
+    rcpp_result_gen = Rcpp::wrap(load_library_for_kernel_cross_package_wrapper_cpp_export(kernel_relative_path, kernel_package, library_subdir, library_package, depends_tag));
+    return rcpp_result_gen;
+END_RCPP
+}
+// read_program_preload_manifest_cpp_export
+Rcpp::DataFrame read_program_preload_manifest_cpp_export(const std::string& manifest_relative_path, const std::string& source_package);
+RcppExport SEXP _opencltools_read_program_preload_manifest_cpp_export(SEXP manifest_relative_pathSEXP, SEXP source_packageSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type manifest_relative_path(manifest_relative_pathSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type source_package(source_packageSEXP);
+    rcpp_result_gen = Rcpp::wrap(read_program_preload_manifest_cpp_export(manifest_relative_path, source_package));
+    return rcpp_result_gen;
+END_RCPP
+}
 // has_opencl_cpp_export
 bool has_opencl_cpp_export();
 RcppExport SEXP _opencltools_has_opencl_cpp_export() {
@@ -111,6 +151,9 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_opencltools_load_kernel_source_wrapper_cpp_export", (DL_FUNC) &_opencltools_load_kernel_source_wrapper_cpp_export, 2},
     {"_opencltools_load_kernel_library_wrapper_cpp_export", (DL_FUNC) &_opencltools_load_kernel_library_wrapper_cpp_export, 3},
+    {"_opencltools_load_program_preload_wrapper_cpp_export", (DL_FUNC) &_opencltools_load_program_preload_wrapper_cpp_export, 3},
+    {"_opencltools_load_library_for_kernel_cross_package_wrapper_cpp_export", (DL_FUNC) &_opencltools_load_library_for_kernel_cross_package_wrapper_cpp_export, 5},
+    {"_opencltools_read_program_preload_manifest_cpp_export", (DL_FUNC) &_opencltools_read_program_preload_manifest_cpp_export, 2},
     {"_opencltools_has_opencl_cpp_export", (DL_FUNC) &_opencltools_has_opencl_cpp_export, 0},
     {"_opencltools_get_opencl_core_count_cpp_export", (DL_FUNC) &_opencltools_get_opencl_core_count_cpp_export, 0},
     {"_opencltools_gpu_names_cpp_export", (DL_FUNC) &_opencltools_gpu_names_cpp_export, 0},

@@ -744,9 +744,27 @@ std::string load_kernel_source_wrapper(std::string relative_path,
 }
 
 std::string load_kernel_library_wrapper(std::string subdir,
-                                        std::string package ,
-                                        bool verbose ) {
+                                       std::string package ,
+                                       bool verbose ) {
   return load_kernel_library(subdir, package, verbose);
+}
+
+std::string load_program_preload_wrapper(
+    std::string manifest_relative_path,
+    std::string source_package,
+    bool verbose) {
+  return load_program_preload(manifest_relative_path, source_package, verbose);
+}
+
+std::string load_library_for_kernel_cross_package_wrapper(
+    std::string kernel_relative_path,
+    std::string kernel_package,
+    std::string library_subdir,
+    std::string library_package,
+    std::string depends_tag) {
+  return load_library_for_kernel_cross_package(
+      kernel_relative_path, kernel_package, library_subdir,
+      library_package, depends_tag);
 }
 
 }

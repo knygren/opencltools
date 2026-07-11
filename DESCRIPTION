@@ -42,6 +42,7 @@ LinkingTo: Rcpp, RcppArmadillo, RcppParallel
 Depends: R (>= 3.5.0)
 Suggests:
     glmbayes (>= 0.9.3),
+    nmathopencl,
     testthat (>= 3.0.0),
     spelling,
     knitr,

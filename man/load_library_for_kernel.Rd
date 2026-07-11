@@ -100,6 +100,7 @@ nzchar(src)
 
 Other OpenCL kernel library subsets: 
 \code{\link{extract_library_subset}()},
+\code{\link{load_library_for_kernel_cross_package}()},
 \code{\link{write_kernel_dependency_index}()}
 }
 \concept{OpenCL kernel library subsets}

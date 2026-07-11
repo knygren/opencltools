@@ -4,6 +4,15 @@
 
 Unreleased changes after CRAN **0.8.1**.
 
+* **Program preload manifest (R):** New **`read_program_preload_manifest()`**,
+  **`load_program_preload()`**, and **`write_program_preload_manifest()`**
+  wrap the C++ manifest loader shipped in step 4. A companion
+  **`program_preload_manifest.rds`** can be written beside the **`.tsv`** for
+  fast R-side reuse (same pattern as **`kernel_dependency_index.rds`**).
+* **Cross-package library subsetting (R):** New
+  **`load_library_for_kernel_cross_package()`** mirrors
+  **`openclPort::load_library_for_kernel_cross_package()`** for interactive
+  and test code (launcher kernel and **`nmath/`** tree in different packages).
 * **`nmathopencl`** and **`glmbayes`** on CRAN now link against **`opencltools`**
   (`LinkingTo` / runtime integration); development continues on git and
   R-universe at this version.

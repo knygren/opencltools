@@ -25,6 +25,36 @@
 
 #' @noRd
 #' @keywords internal
+.load_program_preload_wrapper_cpp <- function(manifest_relative_path,
+                                              source_package,
+                                              verbose = FALSE) {
+  .Call(`_opencltools_load_program_preload_wrapper_cpp_export`,
+        manifest_relative_path, source_package, verbose)
+}
+
+#' @noRd
+#' @keywords internal
+.load_library_for_kernel_cross_package_wrapper_cpp <- function(
+    kernel_relative_path,
+    kernel_package,
+    library_subdir,
+    library_package,
+    depends_tag) {
+  .Call(`_opencltools_load_library_for_kernel_cross_package_wrapper_cpp_export`,
+        kernel_relative_path, kernel_package, library_subdir,
+        library_package, depends_tag)
+}
+
+#' @noRd
+#' @keywords internal
+.read_program_preload_manifest_cpp <- function(manifest_relative_path,
+                                              source_package) {
+  .Call(`_opencltools_read_program_preload_manifest_cpp_export`,
+        manifest_relative_path, source_package)
+}
+
+#' @noRd
+#' @keywords internal
 .has_opencl_cpp <- function() {
   .Call("_opencltools_has_opencl_cpp_export")
 }

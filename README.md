@@ -179,6 +179,9 @@ library:
 | `attach_kernel_call_tags()` | **Step 1** — scan your kernel source, match calls against a library's `@provides` list, write `@calls_<tag>` and `@depends_<tag>` into the kernel files. No manual tagging needed. |
 | `attach_cross_library_tags()` | **Step 2** — read `@depends_<tag>`, compute the full transitive closure against the library index, write `@all_depends_<tag>` back into the kernel files |
 | `load_library_for_kernel()` | At runtime (or interactively), read `@all_depends_<tag>` from a kernel file and concatenate only the library shards it needs, in dependency order. Emits warnings for known-problematic stems. |
+| `load_library_for_kernel_cross_package()` | Same as above when the launcher kernel and annotated library live in different installed packages (paths relative to `inst/cl/`). |
+| `load_program_preload()` | Read `program_preload_manifest.tsv` (or RDS companion) and concatenate the fixed OpenCL prelude in manifest order. |
+| `read_program_preload_manifest()` / `write_program_preload_manifest()` | Inspect or regenerate manifest TSV/RDS companions under `inst/cl/`. |
 | `extract_library_subset()` | Materialize a kernel-specific subset into a local directory (for packages that want to ship their own copy of the needed shards) |
 | `write_kernel_dependency_index()` | Regenerate `kernel_dependency_index.rds` / `.tsv` after updating a library tree |
 
