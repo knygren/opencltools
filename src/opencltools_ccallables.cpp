@@ -78,6 +78,46 @@ extern "C" {
       return nullptr;
     }
   }
+
+  const char* opencltools_load_library_for_kernel_cross_package(
+      const char* kernel_relative_path,
+      const char* kernel_package,
+      const char* library_subdir,
+      const char* library_package,
+      const char* depends_tag) {
+    if (!kernel_relative_path || !kernel_package || !library_subdir ||
+        !library_package || !depends_tag) {
+      return nullptr;
+    }
+    try {
+      std::string out = openclPort::load_library_for_kernel_cross_package(
+          kernel_relative_path, kernel_package, library_subdir,
+          library_package, depends_tag);
+      char* p = static_cast<char*>(std::malloc(out.size() + 1));
+      if (!p) return nullptr;
+      std::memcpy(p, out.c_str(), out.size() + 1);
+      return p;
+    } catch (...) {
+      return nullptr;
+    }
+  }
+
+  const char* opencltools_load_program_preload(
+      const char* manifest_relative_path,
+      const char* source_package,
+      int verbose) {
+    if (!manifest_relative_path || !source_package) return nullptr;
+    try {
+      std::string out = openclPort::load_program_preload(
+          manifest_relative_path, source_package, verbose != 0);
+      char* p = static_cast<char*>(std::malloc(out.size() + 1));
+      if (!p) return nullptr;
+      std::memcpy(p, out.c_str(), out.size() + 1);
+      return p;
+    } catch (...) {
+      return nullptr;
+    }
+  }
   
   void opencltools_free_cstr(const char* p) {
     std::free((void*)p);
@@ -99,6 +139,8 @@ void register_opencltools_ccallables_cpp_export() {
   R_RegisterCCallable("opencltools", "opencltools_load_kernel_source",           (DL_FUNC) &opencltools_load_kernel_source);
   R_RegisterCCallable("opencltools", "opencltools_load_kernel_library",          (DL_FUNC) &opencltools_load_kernel_library);
   R_RegisterCCallable("opencltools", "opencltools_load_library_for_kernel",      (DL_FUNC) &opencltools_load_library_for_kernel);
+  R_RegisterCCallable("opencltools", "opencltools_load_library_for_kernel_cross_package", (DL_FUNC) &opencltools_load_library_for_kernel_cross_package);
+  R_RegisterCCallable("opencltools", "opencltools_load_program_preload",         (DL_FUNC) &opencltools_load_program_preload);
   R_RegisterCCallable("opencltools", "opencltools_free_cstr",                    (DL_FUNC) &opencltools_free_cstr);
   R_RegisterCCallable("opencltools", "opencltools_api_version",                  (DL_FUNC) &opencltools_api_version);
 }

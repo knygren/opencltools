@@ -78,6 +78,18 @@ extern "C" {
       const char* library_subdir,
       const char* package,
       const char* depends_tag);
+
+  typedef const char* (*opencltools_load_library_for_kernel_cross_package_t)(
+      const char* kernel_relative_path,
+      const char* kernel_package,
+      const char* library_subdir,
+      const char* library_package,
+      const char* depends_tag);
+
+  typedef const char* (*opencltools_load_program_preload_t)(
+      const char* manifest_relative_path,
+      const char* source_package,
+      int verbose);
   
   typedef void (*opencltools_free_cstr_t)(const char* p);
   
@@ -149,6 +161,21 @@ extern "C" {
     if (!fn) fn = (opencltools_load_library_for_kernel_t) opencltools_capi_resolve_("opencltools_load_library_for_kernel");
     return fn;
   }
+
+  static inline opencltools_load_library_for_kernel_cross_package_t
+  opencltools_load_library_for_kernel_cross_package_fn(void) {
+    static opencltools_load_library_for_kernel_cross_package_t fn = NULL;
+    if (!fn) fn = (opencltools_load_library_for_kernel_cross_package_t)
+        opencltools_capi_resolve_("opencltools_load_library_for_kernel_cross_package");
+    return fn;
+  }
+
+  static inline opencltools_load_program_preload_t opencltools_load_program_preload_fn(void) {
+    static opencltools_load_program_preload_t fn = NULL;
+    if (!fn) fn = (opencltools_load_program_preload_t)
+        opencltools_capi_resolve_("opencltools_load_program_preload");
+    return fn;
+  }
   
   static inline opencltools_free_cstr_t opencltools_free_cstr_fn(void) {
     static opencltools_free_cstr_t fn = NULL;
@@ -202,6 +229,25 @@ extern "C" {
       const char* depends_tag) {
     return opencltools_load_library_for_kernel_fn()(
         kernel_relative_path, library_subdir, package, depends_tag);
+  }
+
+  static inline const char* opencltools_load_library_for_kernel_cross_package(
+      const char* kernel_relative_path,
+      const char* kernel_package,
+      const char* library_subdir,
+      const char* library_package,
+      const char* depends_tag) {
+    return opencltools_load_library_for_kernel_cross_package_fn()(
+        kernel_relative_path, kernel_package, library_subdir,
+        library_package, depends_tag);
+  }
+
+  static inline const char* opencltools_load_program_preload(
+      const char* manifest_relative_path,
+      const char* source_package,
+      int verbose) {
+    return opencltools_load_program_preload_fn()(
+        manifest_relative_path, source_package, verbose);
   }
   
   static inline void opencltools_free_cstr(const char* p) {
