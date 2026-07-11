@@ -1,8 +1,7 @@
-# opencltools 0.8.1.9000
+# opencltools 0.8.2
 
-## Development version
-
-Unreleased changes after CRAN **0.8.1**.
+Patch release after CRAN **0.8.1**, enabling downstream integration in
+**`nmathopencl`** and **`glmbayes`**.
 
 * **Program preload manifest (R):** New **`read_program_preload_manifest()`**,
   **`load_program_preload()`**, and **`write_program_preload_manifest()`**
@@ -16,6 +15,10 @@ Unreleased changes after CRAN **0.8.1**.
 * **`nmathopencl`** and **`glmbayes`** on CRAN now link against **`opencltools`**
   (`LinkingTo` / runtime integration); development continues on git and
   R-universe at this version.
+* **Citation metadata:** **`inst/CITATION`** now cites this package and Stone
+  et al. (2010) only (removed leftover **`glmbayes`** and JASA 2006 entries from
+  the package split). **`inst/COPYRIGHTS`** and **`inst/REFERENCES.bib`** retargeted
+  to **opencltools**; package-level **`@references`** aligned.
 
 # opencltools 0.8.1
 

@@ -1,8 +1,8 @@
 Package: opencltools
 Type: Package
 Title: 'OpenCL' Tools for R Package Developers
-Version: 0.8.1.9000
-Date: 2026-06-21
+Version: 0.8.2
+Date: 2026-07-11
 Authors@R: c(
     person("Kjell", "Nygren", role = c("aut", "cre"),
            email = "kjell.a.nygren@gmail.com"),
@@ -25,9 +25,9 @@ Description: Runtime 'OpenCL' support for R package developers: probe hardware
     and drivers, load and concatenate kernel sources, and manage
     dependency-annotated '.cl' libraries, so packages like 'nmathopencl' and
     other ported libraries can offer GPU acceleration without each re-implementing
-    the same plumbing. Vignettes use the 'glmbayes' envelope-gradient example
-    and likelihood subgradient methodology (Nygren and Nygren, 2006,
-    <doi:10.1198/016214506000000357>).
+    the same plumbing. Vignettes illustrate integration with suggested packages
+    'nmathopencl' and 'glmbayes'; production kernels for those applications
+    ship in those packages rather than here.
 License: GPL-2
 URL: https://github.com/knygren/opencltools, https://knygren.r-universe.dev/opencltools
 BugReports: https://github.com/knygren/opencltools/issues

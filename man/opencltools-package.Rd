@@ -29,18 +29,14 @@ scripts.
 \section{Citation}{
 
 Use \code{citation("opencltools")} for BibTeX. The first entry cites this
-package as software. Also cite Nygren and Nygren (2006) when your work uses
-the likelihood subgradient envelope computation illustrated in the
-\pkg{glmbayes} \code{f2_f3_*} examples, and Stone \emph{et al.} (2010) when
-reporting OpenCL GPU execution.
+package as software; the second cites Stone \emph{et al.} (2010) when
+reporting OpenCL GPU execution. Cite \pkg{nmathopencl} for ported Mathlib
+kernels and \pkg{glmbayes} for the Bayesian GLM application layer.
+Likelihood subgradient methodology (Nygren and Nygren, 2006) applies to
+\pkg{glmbayes} envelope sampling, not to citing this loader/runtime layer alone.
 }
 
 \references{
-Nygren KN, Nygren LM (2006).
-\emph{Likelihood Subgradient Densities.}
-Journal of the American Statistical Association \bold{101}(475), 1144--1156.
-\doi{10.1198/016214506000000357}
-
 Stone JE, Gohara D, Shi G (2010).
 \emph{OpenCL: A Parallel Programming Standard for Heterogeneous Computing Systems.}
 Computing in Science and Engineering \bold{12}(3), 66--72.

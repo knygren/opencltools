@@ -1,30 +1,10 @@
-# CRAN submission comments — opencltools 0.8.1
+# CRAN submission comments — opencltools 0.8.2
 
 ## Summary
 
-Resubmission of **opencltools** **0.8.1** addressing reviewer feedback on
-**0.8.0**: missing **`\value`** sections in documentation, and examples that
-did not run during **`R CMD check`** because they were largely inside
-**`\donttest{}`**.
-
-## Response to CRAN feedback
-
-1. **`\value` sections** — Added or completed **`\value`** for exported
-   functions and relevant S3 methods, including **`kernel_lib_subset_printing`**
-   (the file named in the review). Documentation describes return type and
-   structure (class), what the output means, or states that a function is
-   called for side effects only, as appropriate.
-
-2. **Examples run on check** — Removed **`\donttest{}`** from examples that can
-   run in under 5 seconds per help page (host diagnostics, kernel source
-   loading, tagging/indexing/subsetting). On CRAN builders where OpenCL is
-   compiled in, slow device enumeration in **`gpu_diagnostics`** examples is
-   skipped unless **`NOT_CRAN=true`**, to stay within the 5 second guideline.
-   Where a help page still has a longer workflow, a **toy version** of the
-   same steps runs **outside** **`\donttest{}`** (using **`inst/cl/nmath_small/`**
-   and dry-run indexing), so **`R CMD check`** exercises the API automatically.
-   **`\donttest{}`** now wraps only the slow tail of those examples—the full
-   **`nmath`** library index rebuild (~137 shards)—which exceeds 5 seconds.
+Update release of **opencltools** **0.8.2** following CRAN **0.8.1**. Adds
+program preload manifest helpers, cross-package library subsetting (R API),
+and integration updates for downstream **`nmathopencl`** and **`glmbayes`**.
 
 ## Test environments
 
@@ -36,7 +16,8 @@ win-builder; R-hub on standard Linux and Windows configurations).
 Spelling NOTE on win-builder (**Nygren**, **subgradient**),
 quoted **OpenCL** in DESCRIPTION, optional OpenCL **`configure`**, and
 **testthat** **`skip_on_cran()`** / **`skip_if_no_opencl()`** are unchanged
-from **0.8.0** (see maintainer archive **`cran-comments-v0.8.0.md`** if needed).
+from **0.8.1** (see maintainer archive **`cran-comments-v0.8.0.md`** for the
+initial **0.8.0** submission if needed).
 
 ---
 _This file is listed in **`.Rbuildignore`** and is not included in the built

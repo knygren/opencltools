@@ -477,21 +477,25 @@ index, following the `Chapter-NN` convention used by `glmbayes`.
 ### Citing this package
 
 Nygren, K. N. (2026). *opencltools: OpenCL Tools for R Package Developers*.
-R package. Use `citation("opencltools")` for BibTeX and a layered set of
-related entries (methodology, OpenCL, `glmbayes`).
+R package. Use `citation("opencltools")` for BibTeX (package manual and Stone
+et al., 2010 for OpenCL). Cite `nmathopencl` and `glmbayes` separately when
+your work uses those layers.
 
-### Methodology in the worked example (`f2_f3_*` kernels)
+### Methodology in downstream envelope sampling (`f2_f3_*` kernels)
 
-The vignettes and `ex_glmbayes_*` example kernels evaluate **likelihood
-subgradient** quantities used in envelope-based accept–reject sampling. That
-statistical construction is from:
+Vignette Chapter 03 documents the runner/wrapper pattern using **glmbayes** as
+the reference implementation. The **`f2_f3_*`** launcher kernels and envelope
+sampling methodology live in **glmbayes** (and **nmathopencl** for Mathlib
+shards), not in this package's shipped `inst/cl/` trees. The statistical
+construction is from:
 
 Nygren, K. N., & Nygren, L. M. (2006). Likelihood subgradient densities.
 *Journal of the American Statistical Association*, 101(475), 1144–1156.
 <https://doi.org/10.1198/016214506000000357>
 
-Cite this paper when your work uses that envelope/subgradient computation,
-not when you only use the generic OpenCL loading and annotation tools.
+Cite this paper when your work uses that envelope/subgradient computation in
+**glmbayes**, not when you only use the generic OpenCL loading and annotation
+tools in **opencltools**.
 
 ### OpenCL runtime
 

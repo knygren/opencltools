@@ -1,11 +1,10 @@
 citHeader(
   paste0(
     "To cite opencltools as software, use the first entry. ",
-    "If your work uses the likelihood subgradient envelope computation ",
-    "illustrated in the glmbayes examples (f2_f3_* kernels), also cite ",
-    "Nygren and Nygren (2006). If you report OpenCL GPU execution, cite ",
-    "Stone et al. (2010). Cite glmbayes separately when describing that ",
-    "downstream application rather than the opencltools runtime layer."
+    "If you report OpenCL GPU execution, cite Stone et al. (2010). ",
+    "Cite nmathopencl when you use its ported R Mathlib kernels; ",
+    "cite glmbayes only when describing that downstream Bayesian GLM application, ",
+    "not when citing this runtime and loader layer alone."
   )
 )
 
@@ -25,20 +24,6 @@ c(
   ),
   bibentry(
     bibtype  = "Article",
-    title    = "Likelihood Subgradient Densities",
-    author   = c(
-      person("Kjell N.", "Nygren"),
-      person("Lan M.", "Nygren")
-    ),
-    journal  = "Journal of the American Statistical Association",
-    volume   = "101",
-    number   = "475",
-    pages    = "1144--1156",
-    year     = "2006",
-    doi      = "10.1198/016214506000000357"
-  ),
-  bibentry(
-    bibtype  = "Article",
     title    = "OpenCL: A Parallel Programming Standard for Heterogeneous Computing Systems",
     author   = c(
       person("James E.", "Stone"),
@@ -51,13 +36,5 @@ c(
     pages    = "66--72",
     year     = "2010",
     doi      = "10.1109/MCSE.2010.69"
-  ),
-  bibentry(
-    bibtype  = "Manual",
-    title    = "{glmbayes}: Bayesian Generalized Linear Models (IID Samples)",
-    author   = person("Kjell", "Nygren"),
-    year     = "2025",
-    note     = "R package; reference application for envelope gradient kernels",
-    url      = "https://CRAN.R-project.org/package=glmbayes"
   )
 )
