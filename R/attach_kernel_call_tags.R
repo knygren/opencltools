@@ -25,16 +25,16 @@
 #'
 #' ```r
 #' # Step 1 — this function: infer direct library calls from source
-#' nmath_dir <- system.file("cl/nmath", package = "nmathopencl")
+#' nmath_dir <- system.file("cl/nmath_small", package = "opencltools")
 #' attach_kernel_call_tags(
-#'   kernel_paths = list.files("inst/cl/src", "\\.cl$", full.names = TRUE),
+#'   kernel_paths = system.file("cl/src/dnorm_kernel.cl", package = "opencltools"),
 #'   library_dir  = nmath_dir,
 #'   library_tag  = "nmath"
 #' )
 #'
 #' # Step 2 — expand to full transitive closure
 #' attach_cross_library_tags(
-#'   kernel_paths = list.files("inst/cl/src", "\\.cl$", full.names = TRUE),
+#'   kernel_paths = system.file("cl/src/dnorm_kernel.cl", package = "opencltools"),
 #'   library_dir  = nmath_dir,
 #'   depends_tag  = "depends_nmath"
 #' )

@@ -1,17 +1,12 @@
 ############################ Start of cross-package loader example ########################
 
-if (!requireNamespace("nmathopencl", quietly = TRUE)) {
-  stop("Example requires installed nmathopencl.")
-}
-if (!requireNamespace("glmbayes", quietly = TRUE)) {
-  stop("Example requires installed glmbayes.")
-}
-
+## Launcher kernel and library tree both live in opencltools (same API as
+## cross-package use in downstream packages).
 src <- load_library_for_kernel_cross_package(
-  kernel_relative_path = "src/f2_f3_gaussian.cl",
-  kernel_package = "glmbayes",
-  library_subdir = "nmath",
-  library_package = "nmathopencl",
+  kernel_relative_path = "src/dnorm_kernel.cl",
+  kernel_package = "opencltools",
+  library_subdir = "nmath_small",
+  library_package = "opencltools",
   depends_tag = "all_depends_nmath"
 )
 print(src)

@@ -1,6 +1,6 @@
 ############################ Start of stage_kernel_dependency_sort example ########################
 
-lib_dir    <- system.file("cl/ex_glmbayes_nmath", package = "opencltools")
+lib_dir    <- system.file("cl/nmath_small", package = "opencltools")
 output_dir <- tempfile("stage_sort")
 on.exit(unlink(output_dir, recursive = TRUE), add = TRUE)
 

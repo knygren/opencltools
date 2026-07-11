@@ -1,9 +1,10 @@
 #' Read a program preload manifest
 #'
 #' Reads the tab-separated manifest that lists the fixed OpenCL prelude
-#' (single files and annotated library directories) in load order.  The
-#' default manifest ships with **nmathopencl** as
-#' \code{program_preload_manifest.tsv} under \verb{inst/cl/}.
+#' (single files and annotated library directories) in load order.  Production
+#' manifests ship with downstream packages such as **nmathopencl**; this package
+#' includes a small teaching manifest at
+#' \code{inst/cl/program_preload_manifest.tsv} for examples and tests.
 #'
 #' When a companion \code{program_preload_manifest.rds} exists beside the
 #' \code{.tsv} file (see \link{write_program_preload_manifest}), the RDS copy
@@ -148,6 +149,8 @@ load_program_preload <- function(
 #'
 #' @seealso \link{read_program_preload_manifest}, \link{load_program_preload}
 #' @family OpenCL program preload
+#'
+#' @example inst/examples/Ex_write_program_preload_manifest.R
 #'
 #' @export
 write_program_preload_manifest <- function(

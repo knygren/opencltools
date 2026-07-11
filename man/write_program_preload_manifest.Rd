@@ -45,6 +45,20 @@ Writes companion manifest files next to the prelude sources under
 \item \code{program_preload_manifest.rds} for fast R-side reuse.
 }
 }
+\examples{
+## write_program_preload_manifest example
+
+manifest <- read_program_preload_manifest(source_package = "opencltools")
+obj <- write_program_preload_manifest(
+  manifest = manifest,
+  source_package = "opencltools",
+  write = FALSE
+)
+names(obj)
+nrow(obj$entries)
+
+## End
+}
 \seealso{
 \link{read_program_preload_manifest}, \link{load_program_preload}
 

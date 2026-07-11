@@ -28,9 +28,10 @@ A \code{data.frame} with columns \code{rank}, \code{kind}
 }
 \description{
 Reads the tab-separated manifest that lists the fixed OpenCL prelude
-(single files and annotated library directories) in load order.  The
-default manifest ships with \strong{nmathopencl} as
-\code{program_preload_manifest.tsv} under \verb{inst/cl/}.
+(single files and annotated library directories) in load order.  Production
+manifests ship with downstream packages such as \strong{nmathopencl}; this package
+includes a small teaching manifest at
+\code{inst/cl/program_preload_manifest.tsv} for examples and tests.
 }
 \details{
 When a companion \code{program_preload_manifest.rds} exists beside the
@@ -40,14 +41,10 @@ is preferred for repeated R-side reads.
 \examples{
 ############################ Start of load_program_preload example ########################
 
-if (!requireNamespace("nmathopencl", quietly = TRUE)) {
-  stop("Example requires installed nmathopencl.")
-}
-
-manifest <- read_program_preload_manifest(source_package = "nmathopencl")
+manifest <- read_program_preload_manifest(source_package = "opencltools")
 print(manifest)
 
-preload <- load_program_preload(source_package = "nmathopencl")
+preload <- load_program_preload(source_package = "opencltools")
 cat("Preload bytes:", attr(preload, "nbytes_concatenated"), "\n")
 
 ## End of load_program_preload example

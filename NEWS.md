@@ -19,6 +19,11 @@ Patch release after CRAN **0.8.1**, enabling downstream integration in
   et al. (2010) only (removed leftover **`glmbayes`** and JASA 2006 entries from
   the package split). **`inst/COPYRIGHTS`** and **`inst/REFERENCES.bib`** retargeted
   to **opencltools**; package-level **`@references`** aligned.
+* **Examples and tests:** program-preload and cross-package loader examples use
+  **opencltools** `inst/cl/` only (no **nmathopencl** / **glmbayes** in runnable
+  examples). Added teaching **`program_preload_manifest.tsv`** under **`inst/cl/`**.
+  **`write_program_preload_manifest`** is demonstrated with **`write = FALSE`**
+  (no disk writes during **`R CMD check`**); round-trip I/O remains in **testthat**.
 
 # opencltools 0.8.1
 
