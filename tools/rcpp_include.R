@@ -192,8 +192,6 @@ rcpp_configure_warnings <- function(lib) {
     s <- if (!is.null(v[["svn.rev"]])) v[["svn.rev"]] else v[["svn rev"]]
     as.integer(as.character(s))
   }, error = function(e) NA_integer_)
-  r_devel <- nzchar(R.version$status) && grepl("devel|Under development", R.version$status, ignore.case = TRUE)
-  r_ge_45 <- rv >= "4.5.0"
 
   v_inst <- tryCatch(packageVersion("Rcpp", lib.loc = lib), error = function(e) NULL)
   if (!is.null(v_inst)) {
@@ -220,33 +218,6 @@ rcpp_configure_warnings <- function(lib) {
     )
   }
 
-  pd <- tryCatch(
-    suppressWarnings(packageDescription("Rcpp", lib.loc = lib)),
-    error = function(e) NULL
-  )
-  if (identical(pd, NA)) {
-    return(invisible())
-  }
-  has_remote <- any(vapply(
-    c("RemoteSha", "GithubRepo", "GithubUsername"),
-    function(f) {
-      v <- pd[[f]]
-      !is.null(v) && length(v) && nzchar(as.character(v)[1L])
-    },
-    FUN.VALUE = logical(1L)
-  ))
-  repo <- pd[["Repository"]]
-  repo_cran <- !is.null(repo) && identical(as.character(repo), "CRAN")
-  repo_unknown <- is.null(repo) || !nzchar(as.character(repo))
-
-  if ((r_devel || r_ge_45) && !has_remote && (repo_cran || repo_unknown)) {
-    writeLines("configure: WARNING: Rcpp looks like a CRAN install (no GitHub Remote* fields).", con = stderr())
-    writeLines("configure: WARNING: On R-devel / R >= 4.5, stale CRAN headers can be incompatible", con = stderr())
-    writeLines("configure: WARNING: with R (e.g. R_NamespaceRegistry). Consider", con = stderr())
-    writeLines("configure: WARNING: remotes::install_github(\"RcppCore/Rcpp\") or ensure", con = stderr())
-    writeLines("configure: WARNING: install_github actually replaced the library.", con = stderr())
-  }
-
   fh <- file.path(lib, "Rcpp", "include", "Rcpp", "Function.h")
   if (file.exists(fh)) {
     txt <- paste(readLines(fh, warn = FALSE), collapse = "\n")
@@ -254,7 +225,8 @@ rcpp_configure_warnings <- function(lib) {
       writeLines(
         paste0(
           "configure: WARNING: Rcpp Function.h matches CRAN-style R_UnboundValue line. ",
-          "If compilation fails with R_NamespaceRegistry, reinstall Rcpp from GitHub or use a patched header."
+          "If compilation fails with R_NamespaceRegistry, ensure Rcpp meets DESCRIPTION Imports ",
+          "or apply tools/patch_rcpp_function_h.R."
         ),
         con = stderr()
       )

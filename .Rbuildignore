@@ -31,5 +31,6 @@
 ^\.github$
 ^\.positai$
 ^\.claude$
+^\.cursor$
 ^CRAN-SUBMISSION$
 ^tools/.*\.exe$

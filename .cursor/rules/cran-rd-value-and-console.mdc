@@ -1,0 +1,48 @@
+---
+description: CRAN requirements for Rd \\value tags and suppressible console output
+alwaysApply: true
+---
+
+# CRAN — `\value` docs and console I/O
+
+These rules come from CRAN review feedback (glmbayesCore and the CRAN Cookbook). Follow them whenever editing `R/` or `man/` in this package so submissions do not regress.
+
+## 1. Exported functions must document `\value`
+
+- Every exported function / S3 method documented with roxygen **must** have `@return` that becomes `\value` in the Rd file.
+- Describe **structure** (list components, class names, atomic type/length) and **meaning** of the return value.
+- If called only for side effects: `@return No return value, called for side effects.` (or equivalent).
+- Edit the **roxygen source** in `R/`, then re-run `devtools::document()` / `roxygen2::roxygenise()`. Do **not** only patch generated `man/*.Rd` files.
+- Exception: `\docType{data}` datasets do not need `\value`.
+
+Cookbook: https://contributor.r-project.org/cran-cookbook/docs_issues.html#missing-value-tags-in-.rd-files
+
+## 2. No ungated `print()` / `cat()` for ordinary messages
+
+CRAN expects console chatter to be suppressible and R-like.
+
+**Do:**
+
+- Use `message()` for informational notes users may suppress with `suppressMessages()`.
+- Use `warning()` / `stop()` for problems.
+- Gate progress or developer noise with `if (isTRUE(verbose)) message(...)` (or an existing `progbar` / quiet option).
+- For diagnostic or summary **reports**, return an object (optionally with a class) and implement `print.<class>()`; let interactive auto-print show the report. Assigned results stay quiet until `print(x)`.
+
+**Allowed exceptions:**
+
+- S3 `print.*` / `print.summary.*` methods (and similar interactive printers).
+- `packageStartupMessage()` on attach when appropriate.
+- The `stats::glm`-style `print(family)` immediately before `stop("'family' not recognized")` is acceptable if matching base R.
+
+**Do not:**
+
+- Call `print("...")` or ungated `cat(...)` inside ordinary modelling / check / sampler functions to emit status text.
+- Rely on `inst/WORDLIST` alone for DESCRIPTION spelling; package/API names in `Description` go in single quotes; use `.aspell/` (UTF-8 **without BOM**) for remaining technical terms if needed.
+
+Cookbook: https://contributor.r-project.org/cran-cookbook/code_issues.html#using-printcat
+
+## 3. Before finishing a docs or console-touching change
+
+1. Confirm new/changed `@export` symbols have `@return`.
+2. Grep `R/` for ungated `cat(` / `print(` outside S3 print methods.
+3. Re-document if roxygen changed.

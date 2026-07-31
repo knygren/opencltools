@@ -1,3 +1,15 @@
+# opencltools 0.8.3
+
+## Bug fixes
+
+* **`tools/rcpp_include.R`:** Removed configure warnings that recommended
+  installing **Rcpp** from GitHub (CRAN policy) for certain R versions.
+
+* **`Suggests`:** Removed **`glmbayes`** while that package is off CRAN
+  (avoids CRAN incoming NOTE on non-mainstream repositories).
+
+* **`.Rbuildignore`:** Added **`^\.cursor$`** (hidden directory NOTE).
+
 # opencltools 0.8.2
 
 Patch release after CRAN **0.8.1**, enabling downstream integration in
