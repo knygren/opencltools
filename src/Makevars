@@ -1,2 +1,2 @@
-PKG_CXXFLAGS =  -I/usr/include -I/home/knygren/R/x86_64-pc-linux-gnu-library/4.5/RcppParallel/include
-PKG_LIBS =  -llapack -lblas -lgfortran -lm -lquadmath -L/usr/lib/x86_64-linux-gnu -lOpenCL -llapack -lblas -lgfortran -lm -lquadmath -L/home/knygren/R/x86_64-pc-linux-gnu-library/4.5/RcppParallel/lib -ltbb -ltbbmalloc -Wl,-rpath,/home/knygren/R/x86_64-pc-linux-gnu-library/4.5/RcppParallel/lib
+PKG_CXXFLAGS =
+PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)

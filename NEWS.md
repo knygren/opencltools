@@ -2,8 +2,9 @@
 
 ## Bug fixes
 
-* **`tools/rcpp_include.R`:** Removed configure warnings that recommended
-  installing **Rcpp** from GitHub (CRAN policy) for certain R versions.
+* **Configure:** Removed **`tools/rcpp_include.R`** Rcpp header probing, Function.h
+  branch flags, and **`glmbayes_getRegisteredNamespace`** shim (rely on
+  **`LinkingTo: Rcpp`** and CRAN **Rcpp** instead).
 
 * **`Suggests`:** Removed **`glmbayes`** while that package is off CRAN
   (avoids CRAN incoming NOTE on non-mainstream repositories).

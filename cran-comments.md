@@ -4,12 +4,16 @@ Patch release following CRAN **0.8.2**.
 
 ## Summary
 
-* **`tools/rcpp_include.R`:** Removed configure warnings that recommended
-  installing **Rcpp** from GitHub for certain version of R (ensure CRAN policy compliance)
+* **Configure:** Removed Rcpp header probing / Function.h workaround tooling
+  (`tools/rcpp_include.R`, `tools/patch_rcpp_function_h.R`,
+  `glmbayes_getRegisteredNamespace` shim). Builds use standard **`LinkingTo:
+  Rcpp`**.
 
 * **`Suggests`:** Removed **`glmbayes`** while that package is off CRAN.
 
 * **`.Rbuildignore`:** Added **`^\.cursor$`** (hidden directory NOTE).
+
+No other functional or API changes.
 
 ## Test environments
 

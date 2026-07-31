@@ -168,37 +168,6 @@ done
 echo "🔎 CL_HEADER = $CL_HEADER"
 
 # --------------------------------------------------------------------
-# 6b. Rcpp include — not part of OpenCL SEARCH_PATHS; R finds LinkingTo Rcpp via .libPaths().
-# If several libraries contain Rcpp, tools/rcpp_include.R picks the newest (or GLMBAYES_RCPP_LIB).
-# Emitting PKG_CPPFLAGS puts -I.../Rcpp/include before other flags so g++ prefers that tree.
-# --------------------------------------------------------------------
-RSCRIPT=""
-if [ -n "${R_HOME:-}" ] && [ -x "${R_HOME}/bin/Rscript" ]; then
-  RSCRIPT="${R_HOME}/bin/Rscript"
-elif [ -n "${R_HOME:-}" ] && [ -n "${R_ARCH:-}" ] && [ -x "${R_HOME}/bin${R_ARCH}/Rscript" ]; then
-  RSCRIPT="${R_HOME}/bin${R_ARCH}/Rscript"
-else
-  RSCRIPT=$(command -v Rscript 2>/dev/null || true)
-fi
-if [ -z "$RSCRIPT" ]; then
-  echo "configure.win: cannot find Rscript (set R_HOME)" >&2
-  exit 1
-fi
-echo "🔧 Resolving Rcpp include via: $RSCRIPT"
-# tools/rcpp_include.R prints: line1 = VERSION<TAB>LIB, line2 = -I"...", line3 = Function.h branch 1/2/3
-RCPP_OUT=$("$RSCRIPT" --vanilla tools/rcpp_include.R) || exit $?
-RCPP_META=$(printf '%s\n' "$RCPP_OUT" | head -n 1)
-RCPP_CPPFLAGS=$(printf '%s\n' "$RCPP_OUT" | sed -n '2p')
-RCPP_FHBR=$(printf '%s\n' "$RCPP_OUT" | sed -n '3p')
-RCPP_PKG_VERSION=$(printf '%s\n' "$RCPP_META" | cut -f1)
-RCPP_PKG_LIB=$(printf '%s\n' "$RCPP_META" | cut -f2)
-R_ID_LINE=$("$RSCRIPT" -e 'rv <- as.character(getRversion()); v <- R.version; s <- if (!is.null(v[["svn.rev"]])) v[["svn.rev"]] else v[["svn rev"]]; s <- as.character(s); if (!length(s) || !nzchar(s)) s <- "unknown"; cat(sprintf("configure.win: R version: %s (svn: %s)", rv, s))')
-echo "$R_ID_LINE"
-echo "configure.win: confirmed Rcpp package version ${RCPP_PKG_VERSION} (library: ${RCPP_PKG_LIB})"
-echo "configure.win: Rcpp Function.h branch (for Makevars) = ${RCPP_FHBR}  (see tools/rcpp_include.R stderr for conditions)"
-echo "📦 RCPP_CPPFLAGS = $RCPP_CPPFLAGS"
-
-# --------------------------------------------------------------------
 # 7. Generate Makevars.win
 # --------------------------------------------------------------------
 # If cl.h is found:
@@ -225,14 +194,12 @@ if [ -n "$CL_HEADER" ]; then
   echo "⚙️  INCLUDE_FLAG = $INCLUDE_FLAG"
   echo "⚙️  LIB_FLAG     = $LIB_FLAG"
 
-  # CRAN-safe, OpenMP-free, quoting-stable; -DGLMBAYES_RCPP_FH_SIM= mirrors Rcpp Function.h (see tools/rcpp_include.R)
-  MAKEVARS_CONTENT="PKG_CPPFLAGS = $RCPP_CPPFLAGS
-PKG_CXXFLAGS = -DGLMBAYES_BUILD -DUSE_OPENCL -DGLMBAYES_RCPP_FH_SIM=${RCPP_FHBR} -include glmbayes_getRegisteredNamespace.h $INCLUDE_FLAG
+  # CRAN-safe, OpenMP-free, quoting-stable
+  MAKEVARS_CONTENT="PKG_CXXFLAGS = -DGLMBAYES_BUILD -DUSE_OPENCL $INCLUDE_FLAG
 PKG_LIBS = $LIB_FLAG -lOpenCL \$(LAPACK_LIBS) \$(BLAS_LIBS) \$(FLIBS)"
 else
   # CPU-only fallback, also CRAN-safe
-  MAKEVARS_CONTENT="PKG_CPPFLAGS = $RCPP_CPPFLAGS
-PKG_CXXFLAGS = -DGLMBAYES_BUILD -DGLMBAYES_RCPP_FH_SIM=${RCPP_FHBR} -include glmbayes_getRegisteredNamespace.h
+  MAKEVARS_CONTENT="PKG_CXXFLAGS = -DGLMBAYES_BUILD
 PKG_LIBS = \$(LAPACK_LIBS) \$(BLAS_LIBS) \$(FLIBS)"
 fi
 

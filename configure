@@ -248,23 +248,6 @@ FULL_CXXFLAGS="$FULL_CXXFLAGS $RPP_CPPFLAGS"
 echo ">> FULL_CXXFLAGS    = '$FULL_CXXFLAGS'"
 echo ">> FULL_LIBS        = '$FULL_LIBS'"
 
-# ---- 16. Rcpp include (multiple .libPaths() / GLMBAYES_RCPP_LIB) — see tools/rcpp_include.R ----
-echo ">> Resolving Rcpp include flags via tools/rcpp_include.R"
-# tools/rcpp_include.R prints: line1 = VERSION<TAB>LIB, line2 = -I"...", line3 = Function.h branch 1/2/3
-RCPP_OUT=$("$RSCRIPT" --vanilla tools/rcpp_include.R) || exit $?
-RCPP_META=$(printf '%s\n' "$RCPP_OUT" | head -n 1)
-RCPP_CPPFLAGS=$(printf '%s\n' "$RCPP_OUT" | sed -n '2p')
-RCPP_FHBR=$(printf '%s\n' "$RCPP_OUT" | sed -n '3p')
-RCPP_PKG_VERSION=$(printf '%s\n' "$RCPP_META" | cut -f1)
-RCPP_PKG_LIB=$(printf '%s\n' "$RCPP_META" | cut -f2)
-R_ID_LINE=$("$RSCRIPT" -e 'rv <- as.character(getRversion()); v <- R.version; s <- if (!is.null(v[["svn.rev"]])) v[["svn.rev"]] else v[["svn rev"]]; s <- as.character(s); if (!length(s) || !nzchar(s)) s <- "unknown"; cat(sprintf("configure: R version: %s (svn: %s)", rv, s))')
-echo "$R_ID_LINE"
-echo "configure: confirmed Rcpp package version ${RCPP_PKG_VERSION} (library: ${RCPP_PKG_LIB})"
-echo ">> Rcpp Function.h branch (for Makevars) = ${RCPP_FHBR}  (see tools/rcpp_include.R stderr for conditions)"
-echo ">> RCPP_CPPFLAGS    = '$RCPP_CPPFLAGS'"
-
-# ---- 17. Write final Makevars (PKG_CPPFLAGS precedes LinkingTo -I so newest Rcpp wins) ----
-echo "PKG_CPPFLAGS = $RCPP_CPPFLAGS" > src/Makevars
-# Compile lines show which Rcpp Function.h `Function(name,ns)` path matches this R (see tools/rcpp_include.R).
-echo "PKG_CXXFLAGS = $FULL_CXXFLAGS -DGLMBAYES_RCPP_FH_SIM=${RCPP_FHBR} -include glmbayes_getRegisteredNamespace.h" >> src/Makevars
+# ---- 16. Write final Makevars ----
+echo "PKG_CXXFLAGS = $FULL_CXXFLAGS" > src/Makevars
 echo "PKG_LIBS = $FULL_LIBS" >> src/Makevars
